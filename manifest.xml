@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
+  <iq:application id="926d2a602a8b40b3985cf4176a714801" type="watch-app" name="@Strings.AppName" entry="NavlogApp" launcherIcon="@Drawables.LauncherIcon" minSdkVersion="4.2.0">
+    <iq:products><iq:product id="fr965"/></iq:products>
+    <iq:permissions/>
+    <iq:languages><iq:language>eng</iq:language></iq:languages>
+    <iq:barrels/>
+  </iq:application>
+</iq:manifest>

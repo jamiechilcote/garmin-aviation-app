@@ -1,0 +1,9 @@
+bin/
+.private/
+*.iq
+*.prg
+*.debug.xml
+*.mir
+*.fit
+*.log
+.DS_Store
