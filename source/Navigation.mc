@@ -19,10 +19,20 @@ class Navigation {
           "plannedArrivalUtc"=>utc + Toybox.Math.ceil(leg()["nm"]*3600.0/leg()["gs"]).toNumber(),
           "heading"=>leg()["heading"], "gs"=>leg()["gs"], "actualSeconds"=>null});
     }
-    function legSeconds() { return timers.s["elapsed"] - s["legStart"]; }
+    function legSeconds() {
+        if (s["legs"].size()>0) {
+            var current = s["legs"][s["legs"].size()-1];
+            if (current["actualSeconds"] != null) { return current["actualSeconds"]; }
+        }
+        return timers.s["elapsed"] - s["legStart"];
+    }
     function tick() {
         if (!s["started"] || s["finished"]) { return false; }
         var alert = check.update(timers.s["elapsed"]);
+        if (alert) {
+            check.s["historyIndex"] = s["checks"].size();
+            s["checks"].add({"leg"=>s["index"], "dueUtc"=>check.s["dueUtc"], "ackUtc"=>null, "corrected"=>false});
+        }
         if (!s["arrivalAlerted"] && legSeconds() >= Toybox.Math.ceil(leg()["nm"]*3600.0/leg()["gs"])) {
             s["arrivalAlerted"] = true; alert = true;
         }
@@ -30,17 +40,18 @@ class Navigation {
     }
     function checkAction(utc) {
         if (!s["started"] || s["finished"] || check.s["state"].equals("legCompleted")) { return; }
+        tick();
         if (check.s["state"].equals("idle")) { check.start(timers.s["elapsed"], utc); }
         else {
             var record = check.acknowledge(timers.s["elapsed"], utc);
-            if (record != null) { record["leg"] = s["index"]; s["checks"].add(record); }
+            if (record != null) { s["checks"][check.s["historyIndex"]]["ackUtc"] = utc; }
         }
     }
     function advance(utc) {
         if (!s["started"] || s["finished"] || check.s["state"].equals("legCompleted")) { return; }
         // Snapshot references are safe: the old check is no longer mutated after activation.
         undoState = {"index"=>s["index"], "legStart"=>s["legStart"], "check"=>check.s,
-                     "arrivalAlerted"=>s["arrivalAlerted"], "radioPending"=>s["radioPending"]};
+                     "arrivalAlerted"=>s["arrivalAlerted"], "radioPending"=>s["radioPending"], "checkCount"=>s["checks"].size()};
         var record = s["legs"][s["legs"].size()-1];
         record["finishUtc"] = utc; record["actualSeconds"] = legSeconds();
         if (s["index"] == plan.size()-1) { check.s = copyDictionary(check.s); check.s["state"] = "legCompleted"; }
@@ -50,6 +61,7 @@ class Navigation {
         if (undoState == null || s["finished"]) { return; }
         if (s["index"] != undoState["index"]) { s["legs"].remove(s["legs"][s["legs"].size()-1]); }
         s["corrections"].add({"utc"=>utc, "restoredLeg"=>undoState["index"]});
+        for (var i=undoState["checkCount"]; i<s["checks"].size(); i+=1) { s["checks"][i]["corrected"] = true; }
         s["index"] = undoState["index"]; s["legStart"] = undoState["legStart"];
         s["arrivalAlerted"] = undoState["arrivalAlerted"]; s["radioPending"] = true;
         check.s = undoState["check"];

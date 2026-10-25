@@ -1,0 +1,5 @@
+<resources>
+  <fitContributions>
+    <fitField id="0" displayInActivitySummary="true" sortOrder="0" precision="0" dataLabel="@Strings.AirborneLabel" unitLabel="@Strings.SecondsLabel" />
+  </fitContributions>
+</resources>

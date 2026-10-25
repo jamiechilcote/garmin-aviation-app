@@ -1,1 +1,5 @@
-<strings><string id="AppName">Aviation Navlog</string></strings>
+<strings>
+  <string id="AppName">Aviation Navlog</string>
+  <string id="AirborneLabel">Airborne time</string>
+  <string id="SecondsLabel">s</string>
+</strings>
