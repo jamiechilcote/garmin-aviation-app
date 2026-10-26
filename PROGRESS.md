@@ -36,3 +36,12 @@
 - Alternating checkpoints retained; nested validation, independent reads, sticky errors and conservative version-1 migration added.
 - Entire expanded suite: 35 passed, zero failures/errors in FR965 simulator.
 - Capture and GPS injection cannot yet be verified because the required desktop-control tools are unavailable in this session.
+
+## Remediation — interface and acceptance
+- Implemented the requested clock-first display with measured circular bounds, balanced heading/CLEAROFF groups, green/amber timing states, radio references, route, leg and reliable check progress.
+- Demo warning follows plan metadata. Added a radio confirmation page preserving clock/countdown, refined timers/recovery/confirmation screens, and consumed touch taps to protect physical-button actions.
+- Added raw FIT lap fields for manual airborne periods, including explicitly incomplete phase 2. Native output decoded: one flying session, four laps, two synthetic airborne periods, airborne total 2 seconds. Synthetic altitude present; no coordinates.
+- Explicit local-only finish retains pending native FIT, supports same-instance save retry and preserves the original local end. A pending flag survives restart and blocks silent abandonment; finished pending-native-session rebinding remains unsupported.
+- Expanded suite: 53 passed. Real Garmin renderer tests cover all requested states plus complete/long-waypoint/local-only variants, validate circle bounds and text overlap, and check clock prominence.
+- Debug, test and signed-device development builds succeed. Existing .gitignore edits remain separate.
+- Actual PNG screenshot review, GPS injection, full native app restart/reboot, physical FR965 and Garmin Connect acceptance are still pending. Evidence documents these gaps rather than claiming them complete.

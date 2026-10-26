@@ -40,24 +40,193 @@ PASS
 ------------------------------------------------------------------------------
 Executing test persistentRoundTrip...
 PASS
+------------------------------------------------------------------------------
+Executing test finishingMustNotInventLanding...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveryMustRetainDueEvent...
+PASS
+------------------------------------------------------------------------------
+Executing test finishEarlyHistory...
+PASS
+------------------------------------------------------------------------------
+Executing test finishAirborneIncomplete...
+PASS
+------------------------------------------------------------------------------
+Executing test normalLandingThenFinish...
+PASS
+------------------------------------------------------------------------------
+Executing test actualWaypointSeparate...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveryDueExactlyOnce...
+PASS
+------------------------------------------------------------------------------
+Executing test undoArrivalRetainsEvent...
+PASS
+------------------------------------------------------------------------------
+Executing test centralDeliveryDrainsOnce...
+PASS
+------------------------------------------------------------------------------
+Executing test saveCleanupCannotUndoSuccess...
+PASS
+------------------------------------------------------------------------------
+Executing test failedSaveResumesFit...
+PASS
+------------------------------------------------------------------------------
+Executing test failedSaveAndRestartIsExplicit...
+PASS
+------------------------------------------------------------------------------
+Executing test stopFailureDoesNotSave...
+PASS
+------------------------------------------------------------------------------
+Executing test gpsFailureDoesNotBlockFit...
+PASS
+------------------------------------------------------------------------------
+Executing test fitCreationCleansGps...
+PASS
+------------------------------------------------------------------------------
+Executing test fitStartFailureRetry...
+PASS
+------------------------------------------------------------------------------
+Executing test manualNavigationWhenFitUnavailable...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveredNavigationWhenFitUnavailable...
+PASS
+------------------------------------------------------------------------------
+Executing test corruptionBoundaries...
+PASS
+------------------------------------------------------------------------------
+Executing test independentUnreadableCheckpoint...
+PASS
+------------------------------------------------------------------------------
+Executing test progressMatchesAcknowledgements...
+PASS
+------------------------------------------------------------------------------
+Executing test fitAirborneLapBoundaries...
+PASS
+------------------------------------------------------------------------------
+Executing test lapFailureDoesNotInventFlightEvents...
+PASS
+------------------------------------------------------------------------------
+Executing test nativeFlyingFitLapSmoke...
+DEBUG (16:22): Saved native simulator FIT: two synthetic airborne periods, real elapsed lap boundaries, GPS not asserted.
+PASS
+------------------------------------------------------------------------------
+Executing test alertModeStorageRoundTrip...
+PASS
+------------------------------------------------------------------------------
+Executing test supportedAttentionModes...
+PASS
+------------------------------------------------------------------------------
+Executing test corruptUndoAndStickyErrors...
+PASS
+------------------------------------------------------------------------------
+Executing test ambiguousStopFailureResumes...
+PASS
+------------------------------------------------------------------------------
+Executing test cleanupRetryAfterFinished...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveryBackShowsManualRecordingWarning...
+PASS
+------------------------------------------------------------------------------
+Executing test localFinishRetainsUnsavedFit...
+PASS
+------------------------------------------------------------------------------
+Executing test lateSavePreservesLocalEndAndIncompletePhase...
+PASS
+------------------------------------------------------------------------------
+Executing test pendingFitPreventsSilentNewFlightAfterRestart...
+PASS
+------------------------------------------------------------------------------
+Executing test legacyCheckpointMigrationIsConservative...
+PASS
+------------------------------------------------------------------------------
+Executing test clockDisplayBoundaries...
+PASS
+------------------------------------------------------------------------------
+Executing test rendererCircularBounds...
+DEBUG (16:22): Rendered within circle: idle (14 text boxes)
+DEBUG (16:22): Rendered within circle: running (14 text boxes)
+DEBUG (16:22): Rendered within circle: due (15 text boxes)
+DEBUG (16:22): Rendered within circle: radio (15 text boxes)
+DEBUG (16:22): Rendered within circle: advance (4 text boxes)
+DEBUG (16:22): Rendered within circle: timers (9 text boxes)
+DEBUG (16:22): Rendered within circle: recovery (7 text boxes)
+DEBUG (16:22): Rendered within circle: error (14 text boxes)
+DEBUG (16:22): Rendered within circle: finish (7 text boxes)
+DEBUG (16:22): Rendered within circle: complete (14 text boxes)
+DEBUG (16:22): Rendered within circle: longLeg (14 text boxes)
+DEBUG (16:22): Rendered within circle: localFinish (7 text boxes)
+PASS
+------------------------------------------------------------------------------
+Executing test demoWarningIsConditional...
+PASS
+------------------------------------------------------------------------------
+Executing test radioConfirmationPreservesReferences...
+PASS
+------------------------------------------------------------------------------
+Executing test touchTapCannotStartOrAcknowledge...
+PASS
 
 ==============================================================================
 RESULTS
-Test:                               Status:
-clearoffInterval                    PASS
-acknowledgementAnchor               PASS
-shortenedFinal                      PASS
-manualWaypoints                     PASS
-independentAirborne                 PASS
-hourBoundary                        PASS
-accidentalInputs                    PASS
-unacknowledgedHistory               PASS
-restartRecovery                     PASS
-finalLegUndo                        PASS
-radioAndConfirmation                PASS
-monotonicRollover                   PASS
-repeatedButtonIgnored               PASS
-persistentRoundTrip                 PASS
-Ran 14 tests
+Test:                                         Status:
+clearoffInterval                              PASS
+acknowledgementAnchor                         PASS
+shortenedFinal                                PASS
+manualWaypoints                               PASS
+independentAirborne                           PASS
+hourBoundary                                  PASS
+accidentalInputs                              PASS
+unacknowledgedHistory                         PASS
+restartRecovery                               PASS
+finalLegUndo                                  PASS
+radioAndConfirmation                          PASS
+monotonicRollover                             PASS
+repeatedButtonIgnored                         PASS
+persistentRoundTrip                           PASS
+finishingMustNotInventLanding                 PASS
+recoveryMustRetainDueEvent                    PASS
+finishEarlyHistory                            PASS
+finishAirborneIncomplete                      PASS
+normalLandingThenFinish                       PASS
+actualWaypointSeparate                        PASS
+recoveryDueExactlyOnce                        PASS
+undoArrivalRetainsEvent                       PASS
+centralDeliveryDrainsOnce                     PASS
+saveCleanupCannotUndoSuccess                  PASS
+failedSaveResumesFit                          PASS
+failedSaveAndRestartIsExplicit                PASS
+stopFailureDoesNotSave                        PASS
+gpsFailureDoesNotBlockFit                     PASS
+fitCreationCleansGps                          PASS
+fitStartFailureRetry                          PASS
+manualNavigationWhenFitUnavailable            PASS
+recoveredNavigationWhenFitUnavailable         PASS
+corruptionBoundaries                          PASS
+independentUnreadableCheckpoint               PASS
+progressMatchesAcknowledgements               PASS
+fitAirborneLapBoundaries                      PASS
+lapFailureDoesNotInventFlightEvents           PASS
+nativeFlyingFitLapSmoke                       PASS
+alertModeStorageRoundTrip                     PASS
+supportedAttentionModes                       PASS
+corruptUndoAndStickyErrors                    PASS
+ambiguousStopFailureResumes                   PASS
+cleanupRetryAfterFinished                     PASS
+recoveryBackShowsManualRecordingWarning       PASS
+localFinishRetainsUnsavedFit                  PASS
+lateSavePreservesLocalEndAndIncompletePhase   PASS
+pendingFitPreventsSilentNewFlightAfterRestart PASS
+legacyCheckpointMigrationIsConservative       PASS
+clockDisplayBoundaries                        PASS
+rendererCircularBounds                        PASS
+demoWarningIsConditional                      PASS
+radioConfirmationPreservesReferences          PASS
+touchTapCannotStartOrAcknowledge              PASS
+Ran 53 tests
 
-PASSED (passed=14, failed=0, errors=0)
+PASSED (passed=53, failed=0, errors=0)

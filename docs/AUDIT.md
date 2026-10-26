@@ -1,3 +1,21 @@
+# Remediation status — 2026-10-26
+
+The historical audit below was the input to this remediation. Its five concrete findings have been addressed in code and focused regression tests: confirmed vs unconfirmed history, queued/central alerts, recoverable recording/save/cleanup failure states, manual navigation independent of FIT, and validated independent checkpoint fallback. The original report is retained for traceability.
+
+The UI now uses a measured two-column heading/CLEAROFF layout, conditional demo banner, radio confirmation preserving time/countdown, acknowledgement-based check progress, and explicit recording status. Individual airborne FIT lap/developer fields are implemented and decoded from a native simulator test. All existing tests remain, and the expanded suite passes 53 tests. Debug, test and signed-device builds compile.
+
+## Still open
+
+- Actual baseline/after screenshots and visual acceptance are pending: this session did not expose desktop capture/input tools. Real Garmin rendering/bounds/overlap tests pass, but are not substituted for screenshot review.
+- Simulated GPS coordinate injection/playback was not performed. The new saved FIT has synthetic altitude samples but no coordinates; GPS-track acceptance is still open.
+- Physical FR965 deployment, outdoor GPS/altitude, battery, display lifecycle, sound/vibration/DND, full kill/relaunch/reboot recovery and Garmin Connect compatibility remain unverified.
+- Explicit local-only finish preserves unsaved native FIT. Late saving works within the same app instance; safely identifying/rebinding that finished native session after restart is unsupported in the current integration. Its persistent pending flag blocks silent abandonment by New flight.
+- SDK storage limits and three-flight rolling retention remain. A crash between physical alert delivery and durable checkpoint can cause a repeated alert; the watch does not provide an atomic alert-and-storage transaction.
+- Dynamic persisted-dictionary/compiler warnings remain. No compiler errors or failing automated tests remain in the verified builds.
+
+See [testing](TESTING.md), [screen capture checklist](../evidence/SCREENSHOTS.md) and [FIT evidence](../evidence/FIT-VERIFICATION.md). The task is closer to hardware acceptance, but visual/GPS/device/service acceptance is not declared complete.
+
+---
 # Original-request alignment audit — 2026-10-26
 
 Audited commit `3b8da45` against the original attached request, all production source, tests, manifest, resources, scripts, build logs, recorded test output and project documentation. This was a source/evidence review: no application code changed, builds repeated, simulator sessions restarted, or hardware/Connect tests performed. Findings below are code-path findings unless explicitly described as prior test evidence.

@@ -1,62 +1,53 @@
-# Verification — 2026-10-26
+# Remediation verification — 2026-10-26
 
-## Automated tests
+## Baseline and reproduction
 
-Connect IQ 9.3.0 compiler, Garmin FR965 simulator API 5.2.0. The suite runs production Monkey C classes with controlled elapsed/UTC inputs. Final result: **14 passed, 0 failed, 0 errors**. Full output is in `bin/test-results.log` and a committed copy in `docs/test-results.txt`.
+Starting commit `a6ea793` on main. Existing `.gitignore` edits preserved. Required documents, all source, scripts and tests inspected. Debug/test builds compiled, and **14 baseline tests passed** in Garmin's actual FR965 simulator. Two added regressions reproduced false landing history and missing recovery-event delivery support before changes. Baseline evidence is under `evidence/`.
 
-| Requirement | Evidence |
-|---|---|
-| 10 NM interval | `clearoffInterval`: 100 kt → 360 s, 60 s elapsed → 300 s remaining |
-| Acknowledgement anchor | `acknowledgementAnchor`: due 360, acknowledgement 400 → next due 760 |
-| Overdue | Countdown clamps to zero, due state persists, history stores original scheduled due and actual acknowledgement |
-| Different groundspeeds | `manualWaypoints`: second leg 120 kt → 300 s |
-| Short final segment | `shortenedFinal`: 25 NM → 360 + 360 + 180 s, then complete |
-| Manual advancement | Planned arrival raises a flag without changing index; confirmed advancement and undo tested |
-| Radio confirmation | `radioAndConfirmation`: physical-input controller dismisses radio reminder; advancement still needs confirmation |
-| Airborne periods | `independentAirborne`: two periods 100 + 50 s, with a ground stop excluded |
-| Session through stops | Same test: session and leg remain 250 s while airborne total is 150 s |
-| Hour boundaries | `hourBoundary`: MM:SS formatting at 3600 and a countdown crossing hour boundary |
-| Accidental presses | Pre-start advance ignored; repeated starts ignored; early acknowledgement ignored; confirmation cancellation and rapid duplicate press tested |
-| Restart recovery | `restartRecovery`: UTC gap estimate makes the check overdue without advancing the waypoint |
-| Real persistence | `persistentRoundTrip`: serialize/read/restore via simulator Storage; malformed newer slot falls back to surviving checkpoint |
-| Monotonic rollover | Signed 32-bit wrap gives correct 96 ms difference |
-| Final leg undo | Completed final leg timer freezes; undo resumes original elapsed baseline |
-| Unacknowledged due event | Due history recorded exactly once before acknowledgement; no duplicate event on acknowledgement |
+## Final automated result
 
-## Simulator interaction
+**53 tests passed, zero failures/errors**, using Connect IQ 9.3.0 / FR965 API 5.2.0. Full output: `docs/test-results.txt` and `evidence/final-tests.txt`. No existing test was removed. The radio test was updated to exercise the new explicit reference confirmation page.
 
-- Compiled, loaded and displayed the native FR965 watch app, not a web mockup.
-- Inspected circular screen and corrected oversized time/header clipping and clock/heading spacing.
-- Used simulated physical START, UP and DOWN buttons; opened actions and confirmed Finish and save.
-- Main navigation remains available via BACK. UI-controller tests verify cancelling a pending advancement does not change the leg.
-- Initial screen approximately 25 KB application memory in simulator (not a memory stress test).
-- No injected GPS location or valid GPS fix was used in the recorded sample. Track coordinates and recorded altitude therefore remain unverified.
+Coverage includes:
 
-## FIT save and decode
+- Original CLEAROFF interval/anchor/overdue/short-final/different-speed tests, independent timers, manual waypoints, final-leg undo, duplicate buttons and monotonic rollover.
+- Finishing while airborne records an unconfirmed closure; finishing before a waypoint leaves arrival null; normal landing followed by save preserves the actual landing timestamp.
+- Recovery and undo queue due events; repeated ticks/acknowledgements do not duplicate them; central delivery drains them once.
+- Injected GPS start, FIT create/start/stop/save/restart and GPS cleanup failures. Successful save remains successful after cleanup failure; failed save resumes recording or exposes a stopped/retry state.
+- Initial/recovered manual navigation and timer access without FIT; local-only finish; recording retry and post-save GPS cleanup retry.
+- Explicit local-only completion retains an unsaved FIT, supports same-session late saving, preserves the original local end time, and persists a warning that blocks silent abandonment after restart.
+- Actual object-store round trip, malformed newer-slot fallback, unreadable independent slot fallback, nested corruption, invalid undo, conservative legacy migration, inconsistent legacy totals and sticky deduplicated errors.
+- Clock formatter inputs across 12:59:59 → 13:00:00 and 23:59:59 → 00:00:00. These exercise the formatter used by live `System.getClockTime`; they do not simulate hardware timezone/DST changes.
+- Persisted alert mode round trip and actual simulator Attention calls in vibration, tone, combined and disabled modes. No physical-device audibility or vibration claim follows.
+- Real Garmin buffered-bitmap rendering of idle, running, overdue, radio confirmation, waypoint confirmation, timers, recovery, recording warning, finish, complete and long-waypoint scenes. Every measured text rectangle fits an inset 217-pixel safe circle; text rectangles do not overlap; clock is largest. Demo warning is conditional. Touch taps do not start/acknowledge.
+- Native simulator FIT integration with four real elapsed lap boundaries and two synthetic airborne periods. Production Recording/FitContributor code is used; failures are injected only in isolated test classes elsewhere.
 
-Saved simulator activity `2026-10-26-09-33-20.fit` (synthetic simulator data). Decoded with Garmin's bundled `fit-graph.jar`, class `com.garmin.fit.csv.CSVTool`:
+The native integration test waits about 4.4 seconds in its isolated test method to give Garmin lap records distinct timestamps. It is not part of the production app or physical-device acceptance workflow.
 
-- One activity and one session.
-- Sport `20` (flying), sub-sport `0` (generic).
-- Activity name `Aviation Navlog`.
-- Session elapsed and timer time `139.422` seconds.
-- Custom SESSION developer field `Airborne seconds = 0` (no takeoff was recorded in this UI smoke test).
-- No GPS position fix; zero recorded distance. This verifies the FIT save pipeline and custom field, **not** GPS track accuracy or Garmin Connect presentation.
+## Builds
 
-The raw `.fit` remains in the simulator's `%LOCALAPPDATA%\Temp\com.garmin.connectiq\GARMIN\Activities` directory. Decoded CSV is in `bin/simulator-flight.csv`; it is not tracked by Git. Simulator heart rate values are synthetic and not evidence of real sensor performance.
+Debug simulator application, unit-test application and signed development device application compile successfully. Logs: `bin/final-build.log`, `bin/final-test-build.log`, `bin/final-device-build.log`. Dynamic dictionary/controller type warnings remain; no compiler errors. Signing keys and binaries are excluded from Git.
 
-## Build notes
+## FIT output
 
-Debug, test and release/device builds compile against the installed FR965 package. The compiler emits gradual-type warnings around heterogeneous persisted dictionaries and dynamic view/controller members; no compiler errors remain. Tests use the same dictionaries after serialization. No third-party package installation was necessary.
+Garmin's bundled decoder confirms one flying session (sport 20), four lap messages, two airborne laps, period seconds and UTC fields, plus the airborne-total session field. Four synthetic altitude samples were present. **No coordinate samples were present.** See `evidence/FIT-VERIFICATION.md`. This does not verify a GPS flight track, altitude accuracy, Garmin Connect import/display, or continuity after reboot.
 
-## Hardware / service acceptance still required
+## Visual / lifecycle checks still pending
 
-1. Sideload on a physical FR965, launch from its app list, verify local time, all five buttons, touch behaviour and sleep/display lifecycle.
-2. Obtain a GPS fix outdoors and record a short ground walk solely as a development test; save and inspect position and altitude in the resulting flying FIT.
-3. Test multiple manual airborne periods and stops; compare local history with known durations and FIT summary.
-4. Test each alert mode, DND/silent settings and in-cockpit visibility/audibility.
-5. Interrupt with a system screen, terminate/reopen the app, then reboot the watch in a separate test. Verify checkpoint recovery and determine whether FIT is continuous or split; do not assume reboot continuity.
-6. Exercise a long session for battery, storage and memory bounds, and test save failure behaviour with a controlled full-storage scenario.
-7. Sync a test activity to Garmin Connect and inspect category, map, altitude and duration. Sideloaded custom-field visibility is not guaranteed. Do not publish the app merely to test visibility.
+Desktop screenshot/input tools were unavailable. Plugin discovery found no usable replacement. No screenshots were fabricated, and mathematical bounds tests are not described as screenshot review. Required capture names and scene coverage are in `evidence/SCREENSHOTS.md`. The original app was launched before changes; the final app is also launched after building, but screen appearance has not been inspected in this session.
 
-No physical-device deployment, flight test, Garmin Connect login/upload, or Store publication was performed.
+A finished local-only session with pending FIT cannot yet be safely rebound after app restart. Its pending flag remains visible and prevents silent New flight abandonment; resolve it within the same app session or preserve data for development review. Full native app kill/relaunch with an unsaved FIT session, real device reboot, and GPS injection/playback remain pending. State reconstruction and queued-event recovery tests do not replace those lifecycle checks.
+
+## Physical-device acceptance procedure
+
+1. Build `./scripts/build.ps1 -Release`; USB-copy `bin/navlog-device.prg` into FR965 `GARMIN/APPS`, then disconnect and launch Aviation Navlog.
+2. Inspect the demo banner, local seconds, heading/countdown grouping, radio values, longest waypoint, warnings and circular edges. Exercise every physical button and verify touches cannot trigger critical actions.
+3. Begin an outdoor development session; inspect DOWN's GPS/FIT status. Obtain a valid fix and record a short development track, then decode its FIT for changing coordinates and altitude. Treat it as a development flying activity, not an operational flight plan.
+4. Manually start checks. At 100 kt the first leg uses 06:00. Acknowledge late and verify the next full interval starts at acknowledgement. Complete the shortened final segment without automatic waypoint advancement.
+5. Use takeoff/landing twice with a ground stop; session continues throughout. Compare period history, total airborne time and lap fields. Test an early finish while airborne: landing and destination arrival must remain unconfirmed/unreached.
+6. Check all four alert modes, silent/DND settings, outdoor readability, display timeout/wake and battery use. Do not infer these from simulator sound.
+7. In a separate development run, interrupt/close/reopen and then reboot. Verify local recovery, pending alerts and recording status; inspect whether raw FIT is continuous or split. Do not assume GPS data can be reconstructed across a gap.
+8. Sync a development activity to Garmin Connect and inspect category, map, altitude, duration, laps and custom fields. Sideloaded custom fields may not be shown. Do not publish to the Store solely to test presentation.
+9. Stress-test history limits, storage failures and native save retries on controlled development data before operational use.
+
+No physical watch, Garmin Connect account/upload, Store publication, actual flight, or GPS track acceptance was performed here.
