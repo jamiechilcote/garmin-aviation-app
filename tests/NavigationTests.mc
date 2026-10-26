@@ -105,3 +105,14 @@ import Toybox.Test;
     Toybox.Application.Storage.deleteValue("test-checkpoint1"); return true;
 }
 
+
+(:test) function finishingMustNotInventLanding(logger) {
+    var n = new Navigation(); n.start(1000); n.timers.takeoff(1010);
+    n.timers.s["elapsed"] = 100; n.finish(1100);
+    Test.assert(n.timers.s["periods"][0]["landingUtc"] == null); return true;
+}
+(:test) function recoveryMustRetainDueEvent(logger) {
+    var n = new Navigation(); n.start(1000); n.checkAction(1000);
+    var p = new Persistence(); var r = p.restore(p.snapshot(n,1000),1400);
+    Test.assert(r has :takeEvents); return true;
+}

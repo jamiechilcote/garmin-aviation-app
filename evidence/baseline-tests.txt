@@ -1,0 +1,63 @@
+------------------------------------------------------------------------------
+Executing test clearoffInterval...
+PASS
+------------------------------------------------------------------------------
+Executing test acknowledgementAnchor...
+PASS
+------------------------------------------------------------------------------
+Executing test shortenedFinal...
+PASS
+------------------------------------------------------------------------------
+Executing test manualWaypoints...
+PASS
+------------------------------------------------------------------------------
+Executing test independentAirborne...
+PASS
+------------------------------------------------------------------------------
+Executing test hourBoundary...
+PASS
+------------------------------------------------------------------------------
+Executing test accidentalInputs...
+PASS
+------------------------------------------------------------------------------
+Executing test unacknowledgedHistory...
+PASS
+------------------------------------------------------------------------------
+Executing test restartRecovery...
+PASS
+------------------------------------------------------------------------------
+Executing test finalLegUndo...
+PASS
+------------------------------------------------------------------------------
+Executing test radioAndConfirmation...
+PASS
+------------------------------------------------------------------------------
+Executing test monotonicRollover...
+PASS
+------------------------------------------------------------------------------
+Executing test repeatedButtonIgnored...
+PASS
+------------------------------------------------------------------------------
+Executing test persistentRoundTrip...
+PASS
+
+==============================================================================
+RESULTS
+Test:                               Status:
+clearoffInterval                    PASS
+acknowledgementAnchor               PASS
+shortenedFinal                      PASS
+manualWaypoints                     PASS
+independentAirborne                 PASS
+hourBoundary                        PASS
+accidentalInputs                    PASS
+unacknowledgedHistory               PASS
+restartRecovery                     PASS
+finalLegUndo                        PASS
+radioAndConfirmation                PASS
+monotonicRollover                   PASS
+repeatedButtonIgnored               PASS
+persistentRoundTrip                 PASS
+Ran 14 tests
+
+PASSED (passed=14, failed=0, errors=0)

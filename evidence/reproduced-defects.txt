@@ -1,0 +1,89 @@
+------------------------------------------------------------------------------
+Executing test clearoffInterval...
+PASS
+------------------------------------------------------------------------------
+Executing test acknowledgementAnchor...
+PASS
+------------------------------------------------------------------------------
+Executing test shortenedFinal...
+PASS
+------------------------------------------------------------------------------
+Executing test manualWaypoints...
+PASS
+------------------------------------------------------------------------------
+Executing test independentAirborne...
+PASS
+------------------------------------------------------------------------------
+Executing test hourBoundary...
+PASS
+------------------------------------------------------------------------------
+Executing test accidentalInputs...
+PASS
+------------------------------------------------------------------------------
+Executing test unacknowledgedHistory...
+PASS
+------------------------------------------------------------------------------
+Executing test restartRecovery...
+PASS
+------------------------------------------------------------------------------
+Executing test finalLegUndo...
+PASS
+------------------------------------------------------------------------------
+Executing test radioAndConfirmation...
+PASS
+------------------------------------------------------------------------------
+Executing test monotonicRollover...
+PASS
+------------------------------------------------------------------------------
+Executing test repeatedButtonIgnored...
+PASS
+------------------------------------------------------------------------------
+Executing test persistentRoundTrip...
+PASS
+------------------------------------------------------------------------------
+Executing test finishingMustNotInventLanding...
+
+Error: Unhandled Exception
+Exception: ASSERTION FAILED
+Stack: 
+  - API code 0x30000203 
+  - API code 0x30000174 
+  - finishingMustNotInventLanding() at C:\Development\garmin-aviation-app\tests\NavigationTests.mc:112 0x10000dbe 
+  - evaluate_test_entries_0_to_16() at C:\Development\garmin-aviation-app\bin\gen\006-B4315-00\source\UnitTests.mcgen:94 0x100014a4 
+  - runTest() at C:\Development\garmin-aviation-app\bin\gen\006-B4315-00\source\UnitTests.mcgen:111 0x10001521 
+ERROR
+------------------------------------------------------------------------------
+Executing test recoveryMustRetainDueEvent...
+
+Error: Unhandled Exception
+Exception: ASSERTION FAILED
+Stack: 
+  - API code 0x30000203 
+  - API code 0x30000174 
+  - recoveryMustRetainDueEvent() at C:\Development\garmin-aviation-app\tests\NavigationTests.mc:117 0x10000223 
+  - evaluate_test_entries_0_to_16() at C:\Development\garmin-aviation-app\bin\gen\006-B4315-00\source\UnitTests.mcgen:96 0x100014bf 
+  - runTest() at C:\Development\garmin-aviation-app\bin\gen\006-B4315-00\source\UnitTests.mcgen:111 0x10001521 
+ERROR
+
+==============================================================================
+RESULTS
+Test:                               Status:
+clearoffInterval                    PASS
+acknowledgementAnchor               PASS
+shortenedFinal                      PASS
+manualWaypoints                     PASS
+independentAirborne                 PASS
+hourBoundary                        PASS
+accidentalInputs                    PASS
+unacknowledgedHistory               PASS
+restartRecovery                     PASS
+finalLegUndo                        PASS
+radioAndConfirmation                PASS
+monotonicRollover                   PASS
+repeatedButtonIgnored               PASS
+persistentRoundTrip                 PASS
+finishingMustNotInventLanding       ERROR
+recoveryMustRetainDueEvent          ERROR
+Ran 16 tests
+
+FAILED (passed=14, failed=0, errors=2)

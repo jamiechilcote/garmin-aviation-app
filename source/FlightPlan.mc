@@ -1,5 +1,6 @@
 // Every numeric value is invented demonstration data, never operational data.
 module FlightPlan {
+    const DEMO = true;
     const NAME = "Camden - Goulburn Return";
     function legs() {
         return [
@@ -10,4 +11,5 @@ module FlightPlan {
         ];
     }
 }
+
 

@@ -26,3 +26,13 @@
 ## Phase 5 — Proposal only
 - Documented future spreadsheet JSON import and history export. No Google Sheets/network integration implemented.
 
+
+## Remediation — reliability
+- Reproduced both false landing and missing recovery events before fixing them; baseline 14 tests passed.
+- Separate waypointReachedUtc and legClosedUtc; finishing an active airborne period now marks it unconfirmed without inventing a landing.
+- Navigation transitions queue explicit events; central application delivery retains recovery/undo notifications and drains them once.
+- Manual navigation/timers remain accessible after GPS/FIT failures. Added recording retry and explicit local-only finish when no FIT session exists.
+- FIT save success is independent of GPS cleanup; unsuccessful saves attempt to resume recording, or show an explicit stopped/retry state.
+- Alternating checkpoints retained; nested validation, independent reads, sticky errors and conservative version-1 migration added.
+- Entire expanded suite: 35 passed, zero failures/errors in FR965 simulator.
+- Capture and GPS injection cannot yet be verified because the required desktop-control tools are unavailable in this session.

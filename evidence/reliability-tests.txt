@@ -1,0 +1,147 @@
+------------------------------------------------------------------------------
+Executing test clearoffInterval...
+PASS
+------------------------------------------------------------------------------
+Executing test acknowledgementAnchor...
+PASS
+------------------------------------------------------------------------------
+Executing test shortenedFinal...
+PASS
+------------------------------------------------------------------------------
+Executing test manualWaypoints...
+PASS
+------------------------------------------------------------------------------
+Executing test independentAirborne...
+PASS
+------------------------------------------------------------------------------
+Executing test hourBoundary...
+PASS
+------------------------------------------------------------------------------
+Executing test accidentalInputs...
+PASS
+------------------------------------------------------------------------------
+Executing test unacknowledgedHistory...
+PASS
+------------------------------------------------------------------------------
+Executing test restartRecovery...
+PASS
+------------------------------------------------------------------------------
+Executing test finalLegUndo...
+PASS
+------------------------------------------------------------------------------
+Executing test radioAndConfirmation...
+PASS
+------------------------------------------------------------------------------
+Executing test monotonicRollover...
+PASS
+------------------------------------------------------------------------------
+Executing test repeatedButtonIgnored...
+PASS
+------------------------------------------------------------------------------
+Executing test persistentRoundTrip...
+PASS
+------------------------------------------------------------------------------
+Executing test finishingMustNotInventLanding...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveryMustRetainDueEvent...
+PASS
+------------------------------------------------------------------------------
+Executing test finishEarlyHistory...
+PASS
+------------------------------------------------------------------------------
+Executing test finishAirborneIncomplete...
+PASS
+------------------------------------------------------------------------------
+Executing test normalLandingThenFinish...
+PASS
+------------------------------------------------------------------------------
+Executing test actualWaypointSeparate...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveryDueExactlyOnce...
+PASS
+------------------------------------------------------------------------------
+Executing test undoArrivalRetainsEvent...
+PASS
+------------------------------------------------------------------------------
+Executing test centralDeliveryDrainsOnce...
+PASS
+------------------------------------------------------------------------------
+Executing test saveCleanupCannotUndoSuccess...
+PASS
+------------------------------------------------------------------------------
+Executing test failedSaveResumesFit...
+PASS
+------------------------------------------------------------------------------
+Executing test failedSaveAndRestartIsExplicit...
+PASS
+------------------------------------------------------------------------------
+Executing test stopFailureDoesNotSave...
+PASS
+------------------------------------------------------------------------------
+Executing test gpsFailureDoesNotBlockFit...
+PASS
+------------------------------------------------------------------------------
+Executing test fitCreationCleansGps...
+PASS
+------------------------------------------------------------------------------
+Executing test fitStartFailureRetry...
+PASS
+------------------------------------------------------------------------------
+Executing test manualNavigationWhenFitUnavailable...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveredNavigationWhenFitUnavailable...
+PASS
+------------------------------------------------------------------------------
+Executing test corruptionBoundaries...
+PASS
+------------------------------------------------------------------------------
+Executing test independentUnreadableCheckpoint...
+PASS
+------------------------------------------------------------------------------
+Executing test progressMatchesAcknowledgements...
+PASS
+
+==============================================================================
+RESULTS
+Test:                                 Status:
+clearoffInterval                      PASS
+acknowledgementAnchor                 PASS
+shortenedFinal                        PASS
+manualWaypoints                       PASS
+independentAirborne                   PASS
+hourBoundary                          PASS
+accidentalInputs                      PASS
+unacknowledgedHistory                 PASS
+restartRecovery                       PASS
+finalLegUndo                          PASS
+radioAndConfirmation                  PASS
+monotonicRollover                     PASS
+repeatedButtonIgnored                 PASS
+persistentRoundTrip                   PASS
+finishingMustNotInventLanding         PASS
+recoveryMustRetainDueEvent            PASS
+finishEarlyHistory                    PASS
+finishAirborneIncomplete              PASS
+normalLandingThenFinish               PASS
+actualWaypointSeparate                PASS
+recoveryDueExactlyOnce                PASS
+undoArrivalRetainsEvent               PASS
+centralDeliveryDrainsOnce             PASS
+saveCleanupCannotUndoSuccess          PASS
+failedSaveResumesFit                  PASS
+failedSaveAndRestartIsExplicit        PASS
+stopFailureDoesNotSave                PASS
+gpsFailureDoesNotBlockFit             PASS
+fitCreationCleansGps                  PASS
+fitStartFailureRetry                  PASS
+manualNavigationWhenFitUnavailable    PASS
+recoveredNavigationWhenFitUnavailable PASS
+corruptionBoundaries                  PASS
+independentUnreadableCheckpoint       PASS
+progressMatchesAcknowledgements       PASS
+Ran 35 tests
+
+PASSED (passed=35, failed=0, errors=0)
