@@ -1,5 +1,9 @@
 <resources>
   <fitContributions>
     <fitField id="0" displayInActivitySummary="true" sortOrder="0" precision="0" dataLabel="@Strings.AirborneLabel" unitLabel="@Strings.SecondsLabel" />
+    <fitField id="1" displayInActivityLaps="true" sortOrder="1" precision="0" dataLabel="@Strings.PhaseLabel" unitLabel="@Strings.CodeLabel" />
+    <fitField id="2" displayInActivityLaps="true" sortOrder="2" precision="0" dataLabel="@Strings.PeriodLabel" unitLabel="@Strings.SecondsLabel" />
+    <fitField id="3" displayInActivityLaps="true" sortOrder="3" precision="0" dataLabel="@Strings.TakeoffLabel" unitLabel="@Strings.UtcLabel" />
+    <fitField id="4" displayInActivityLaps="true" sortOrder="4" precision="0" dataLabel="@Strings.LandingLabel" unitLabel="@Strings.UtcLabel" />
   </fitContributions>
 </resources>

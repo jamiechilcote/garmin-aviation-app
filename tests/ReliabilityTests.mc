@@ -1,6 +1,6 @@
 import Toybox.Test;
 import Toybox.Lang;
-(:test) class TestField { function initialize() {} function setData(value) {} }
+(:test) class TestField { var data=null; function initialize() {} function setData(value) { data=value; } }
 (:test) class TestGps {
     var enabled=false; var fault=false; var quality="GPS off"; var failStart=false; var failStop=false;
     function initialize() {}
@@ -8,12 +8,13 @@ import Toybox.Lang;
     function stop() { if(failStop) { throw new Lang.Exception(); } enabled=false; return true; }
 }
 (:test) class TestSession {
-    var recording=false; var failStart=false; var failStop=false; var failSave=false; var throwSave=false; var throwStart=false; var saved=0;
+    var stopReturnsFalseAfterStopping=false; var laps=0; var failLap=false; var recording=false; var failStart=false; var failStop=false; var failSave=false; var throwSave=false; var throwStart=false; var saved=0;
     function initialize() {}
     function isRecording() { return recording; }
     function start() { if(throwStart) { throw new Lang.Exception(); } if(failStart) { return false; } recording=true; return true; }
-    function stop() { if(failStop) { return false; } recording=false; return true; }
+    function stop() { if(failStop) { return false; } recording=false; return !stopReturnsFalseAfterStopping; }
     function save() { if(throwSave) { throw new Lang.Exception(); } if(failSave) { return false; } saved+=1; return true; }
+    function addLap() { if(failLap) { return false; } laps+=1; return true; }
     function createField(name,id,type,options) { return new TestField(); }
 }
 (:test) class TestRecording extends Recording {
@@ -132,4 +133,110 @@ import Toybox.Lang;
     Test.assertEqual(n.progress()["current"],2); n.timers.s["elapsed"]=760; n.checkAction(1760);
     Test.assertEqual(n.check.interval(),180); n.timers.s["elapsed"]=940; n.checkAction(1940);
     Test.assertEqual(n.progress()["done"],3); Test.assertEqual(n.s["index"],0); return true;
+}
+
+(:test) function fitAirborneLapBoundaries(logger) {
+    var r=new TestRecording(); r.start(); Test.assert(r.closePhase(0,0,0,0));
+    Test.assert(r.closePhase(1,100,1000,1100)); Test.assertEqual(r.fake.laps,2);
+    Test.assertEqual(r.phaseField.data,0);
+    var n=new Navigation(); n.start(1000); n.timers.takeoff(1000); n.timers.s["elapsed"]=90;
+    r.prepareFinal(n); Test.assertEqual(r.phaseField.data,2); Test.assertEqual(r.landingField.data,0);
+    Test.assertEqual(r.phaseSecondsField.data,90); Test.assertEqual(r.takeoffField.data,1000); return true;
+}
+(:test) function lapFailureDoesNotInventFlightEvents(logger) {
+    var app=new NavlogApp(); app.testing=true; app.nav.start(1000); var r=new TestRecording(); app.recording=r; r.start(); r.fake.failLap=true;
+    app.execute(3,1000); Test.assert(app.nav.timers.s["airStart"]!=null); app.nav.timers.s["elapsed"]=30; app.execute(3,1030);
+    Test.assertEqual(app.nav.timers.s["periods"][0]["landingUtc"],1030); Test.assert(r.warning); Test.assertEqual(r.fake.laps,0); return true;
+}
+// Native lap records need distinct elapsed timestamps. This is a simulator-only integration test.
+(:test) function nativeFlyingFitLapSmoke(logger) {
+    var r=new Recording(); Test.assert(r.start()); var allLaps=true;
+    var utc=Toybox.Time.now().value();
+    for(var phase=0;phase<4;phase+=1) {
+        var mark=Toybox.System.getTimer();
+        while(monotonicDelta(Toybox.System.getTimer(),mark)<1100) {}
+        var end=Toybox.Time.now().value();
+        var ok=r.closePhase(phase%2==0 ? 0 : 1,phase%2==0 ? 0 : 1,phase%2==0 ? 0 : utc,phase%2==0 ? 0 : end);
+        if(!ok) { logger.error("Native lap rejected: "+r.status); allLaps=false; }
+        utc=end;
+    }
+    var saved=r.save(2); Test.assert(saved); Test.assert(allLaps);
+    logger.debug("Saved native simulator FIT: two synthetic airborne periods, real elapsed lap boundaries, GPS not asserted.");
+    return true;
+}
+(:test) function alertModeStorageRoundTrip(logger) {
+    var previous=Toybox.Application.Storage.getValue("alertMode");
+    try {
+        var app=new NavlogApp(); app.alerts.mode=1; app.execute(5,1000);
+        Test.assertEqual(Toybox.Application.Storage.getValue("alertMode"),2);
+        var reopened=new NavlogApp(); reopened.loadAlertMode(); Test.assertEqual(reopened.alerts.mode,2);
+    } finally {
+        if(previous==null) { Toybox.Application.Storage.deleteValue("alertMode"); }
+        else { Toybox.Application.Storage.setValue("alertMode",previous); }
+    }
+    return true;
+}
+(:test) function supportedAttentionModes(logger) {
+    Test.assert(Toybox.Attention has :vibrate); Test.assert(Toybox.Attention has :playTone);
+    var alerts=new Alerts(); for(var i=0;i<4;i+=1) { alerts.mode=i; alerts.fire(); }
+    return true;
+}
+(:test) function corruptUndoAndStickyErrors(logger) {
+    var p=new Persistence(); var n=new Navigation(); n.start(1000); n.advance(1010);
+    var data=p.snapshot(n,1010); data["undo"]["index"]=1;
+    Test.assert(!p.valid(data));
+    p.fail("same failure"); p.fail("same failure"); Test.assertEqual(p.errors.size(),1); Test.assert(p.error); return true;
+}
+
+(:test) function ambiguousStopFailureResumes(logger) {
+    var r=new TestRecording(); r.start(); r.fake.stopReturnsFalseAfterStopping=true;
+    Test.assert(!r.save(10)); Test.assert(r.fake.recording); Test.assertEqual(r.state,"recording"); return true;
+}
+(:test) function cleanupRetryAfterFinished(logger) {
+    var app=new NavlogApp(); app.testing=true; var r=new TestRecording(); app.recording=r; r.start();
+    app.nav.start(1000); r.gps.failStop=true; app.execute(4,1100); Test.assert(app.nav.s["finished"]);
+    Test.assert(r.cleanupWarning); r.gps.failStop=false; app.execute(8,1101); Test.assert(!r.cleanupWarning); Test.assert(!r.gps.enabled); return true;
+}
+(:test) function recoveryBackShowsManualRecordingWarning(logger) {
+    var n=new Navigation(); n.start(1000); var p=new UnreadableSlotPersistence(); p.fallback=p.snapshot(n,1000);
+    var app=new NavlogApp(); app.testing=true; app.persistence=p; app.lastMillis=Toybox.System.getTimer();
+    app.loadRecovery(1100); Test.assertEqual(app.screen,"recovery"); Test.assert(app.recording.warning);
+    Test.assertEqual(app.recording.state,"paused"); app.input("back"); Test.assertEqual(app.screen,"nav");
+    Test.assertEqual(app.nav.timers.s["elapsed"],100); return true;
+}
+(:test) function localFinishRetainsUnsavedFit(logger) {
+    var app=new NavlogApp(); app.testing=true; app.nav.start(1000); var r=new TestRecording(); app.recording=r;
+    r.fake.failStart=true; Test.assert(!r.start()); Test.assert(r.session!=null);
+    app.nav.timers.takeoff(1000); app.nav.timers.s["elapsed"]=90; app.execute(10,1090);
+    Test.assert(app.nav.s["finished"]); Test.assertEqual(app.nav.s["fitOutcome"],"localOnly");
+    Test.assert(app.nav.timers.s["periods"][0]["landingUtc"]==null); Test.assert(r.session!=null); Test.assert(app.nav.s["fitPending"]);
+    app.execute(6,1091); Test.assert(app.nav.s["finished"]); return true;
+}
+(:test) function lateSavePreservesLocalEndAndIncompletePhase(logger) {
+    var app=new NavlogApp(); app.testing=true; app.nav.start(1000); var r=new TestRecording(); app.recording=r; r.start();
+    app.nav.timers.takeoff(1000); app.nav.timers.s["elapsed"]=90; app.execute(10,1090);
+    Test.assertEqual(app.nav.s["finishUtc"],1090); app.execute(4,1200);
+    Test.assertEqual(r.state,"saved"); Test.assertEqual(app.nav.s["finishUtc"],1090);
+    Test.assertEqual(r.phaseField.data,2); Test.assertEqual(r.landingField.data,0);
+    Test.assert(app.nav.s["legs"][0]["waypointReachedUtc"]==null); return true;
+}
+
+(:test) function pendingFitPreventsSilentNewFlightAfterRestart(logger) {
+    var n=new Navigation(); n.start(1000); n.s["fitPending"]=true; n.s["fitOutcome"]="localOnly"; n.finish(1100);
+    var p=new Persistence(); var restored=p.restore(p.snapshot(n,1100),1200);
+    var app=new NavlogApp(); app.testing=true; app.nav=restored; app.execute(6,1200);
+    Test.assert(app.nav.s["finished"]); Test.assert(app.nav.s["fitPending"]); return true;
+}
+(:test) function legacyCheckpointMigrationIsConservative(logger) {
+    var n=new Navigation(); n.start(1000); n.timers.takeoff(1000); n.timers.s["elapsed"]=10; n.timers.land(1010);
+    n.timers.s["elapsed"]=20; n.advance(1020); var p=new Persistence(); var data=deepCopy(p.snapshot(n,1020)); data["version"]=1;
+    for(var i=0;i<data["navigation"]["legs"].size();i+=1) {
+        var l=data["navigation"]["legs"][i]; l["finishUtc"]=l["legClosedUtc"];
+        l.remove("legClosedUtc"); l.remove("waypointReachedUtc"); l.remove("closure");
+    }
+    var period=data["timers"]["periods"][0]; period.remove("closedUtc"); period.remove("status");
+    Test.assert(p.valid(data)); var restored=p.restore(data,1030);
+    Test.assertEqual(restored.s["legs"][0]["closure"],"legacyUnknown"); Test.assert(restored.s["legs"][0]["waypointReachedUtc"]==null);
+    Test.assertEqual(restored.timers.s["periods"][0]["status"],"legacyUnknown"); Test.assert(p.valid(p.snapshot(restored,1030)));
+    data["timers"]["airTotal"]=9; Test.assert(!p.valid(data)); return true;
 }

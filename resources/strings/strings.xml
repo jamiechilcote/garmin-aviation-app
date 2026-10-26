@@ -2,4 +2,10 @@
   <string id="AppName">Aviation Navlog</string>
   <string id="AirborneLabel">Airborne time</string>
   <string id="SecondsLabel">s</string>
+  <string id="PhaseLabel">Air phase (0 ground, 1 confirmed, 2 incomplete)</string>
+  <string id="CodeLabel">code</string>
+  <string id="PeriodLabel">Air period</string>
+  <string id="TakeoffLabel">Takeoff UTC</string>
+  <string id="LandingLabel">Confirmed landing UTC</string>
+  <string id="UtcLabel">unix s</string>
 </strings>

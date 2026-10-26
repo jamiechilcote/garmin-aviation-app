@@ -3,7 +3,7 @@ import Toybox.Lang;
 class Persistence {
     var error=false; var errors=[]; var generation=0; var prefix="";
     function initialize() {}
-    function fail(message) { error=true; errors.add(message); }
+    function fail(message) { error=true; for(var i=0;i<errors.size();i+=1) { if(errors[i].equals(message)) { return; } } if(errors.size()<16) { errors.add(message); } }
     function snapshot(nav,utc) { return {"version"=>2,"generation"=>generation+1,"savedUtc"=>utc,"navigation"=>nav.s,"timers"=>nav.timers.s,"clearoff"=>nav.check.s,"undo"=>nav.undoState}; }
     function readSlot(slot) { return Storage.getValue(prefix+"checkpoint"+slot); }
     function writeSlot(slot,data) { Storage.setValue(prefix+"checkpoint"+slot,data); }
@@ -69,9 +69,12 @@ class Persistence {
                 else { sum+=p["seconds"]; if(p["closedUtc"]==null) { return false; } }
                 if(p["status"].equals("landed") && p["landingUtc"]==null) { return false; }
                 if(p["status"].equals("unconfirmed") && p["landingUtc"]!=null) { return false; }
+            } else {
+                if(p["landingUtc"]==null) { activePeriods+=1; if(k!=t["periods"].size()-1) { return false; } }
+                else { sum+=p["seconds"]; }
             }
         }
-        if(data["version"]==2 && (activePeriods!=(t["airStart"]==null ? 0 : 1) || sum!=t["airTotal"])) { return false; }
+        if(activePeriods!=(t["airStart"]==null ? 0 : 1) || sum!=t["airTotal"]) { return false; }
         for(var h=0;h<n["corrections"].size();h+=1) {
             var correction=n["corrections"][h]; if(!dict(correction,["utc"]) || !number(correction["utc"],0,2147483647)) { return false; }
             if(correction.hasKey("restoredLeg") && !integer(correction["restoredLeg"],0,3)) { return false; }
@@ -82,9 +85,10 @@ class Persistence {
         if(u!=null && (!dict(u,["index","legStart","check","arrivalAlerted","radioPending","checkCount"]) ||
           !integer(u["index"],0,n["index"]) || !number(u["legStart"],0,t["elapsed"]) || !(u["arrivalAlerted"] instanceof Lang.Boolean) ||
           !(u["radioPending"] instanceof Lang.Boolean) || !integer(u["checkCount"],0,n["checks"].size()) || !checkValid(u["check"],n["checks"].size()))) { return false; }
-        if(u!=null && n["index"]-u["index"]>1) { return false; }
+        if(u!=null && (n["index"]-u["index"]>1 || (n["index"]==u["index"] && (n["index"]!=3 || !data["clearoff"]["state"].equals("legCompleted"))))) { return false; }
         if(data["version"]==2) {
-            if(!dict(n,["events","demo","fitOutcome"]) || !(n["demo"] instanceof Lang.Boolean) || !(n["fitOutcome"] instanceof Lang.String) || !array(n["events"],32)) { return false; }
+            if(n.hasKey("fitPending") && !(n["fitPending"] instanceof Lang.Boolean)) { return false; }
+            if(!dict(n,["schema","events","demo","fitOutcome"]) || n["schema"]!=2 || !(n["demo"] instanceof Lang.Boolean) || !choice(n["fitOutcome"],["notStarted","recording","unavailable","paused","savePending","saved","localOnly","legacyUnknown","idle"]) || !array(n["events"],32)) { return false; }
             for(var e=0;e<n["events"].size();e+=1) { var ev=n["events"][e];
                 if(!dict(ev,["kind","leg","dueUtc"]) || !choice(ev["kind"],["checkDue","arrivalDue"]) || !integer(ev["leg"],0,3) || !number(ev["dueUtc"],0,2147483647)) { return false; }
             }
@@ -120,6 +124,7 @@ class Persistence {
             if(nav.check.s["state"].equals("due")) { nav.event("checkDue",nav.check.s["dueUtc"]); }
             if(nav.s["arrivalAlerted"] && nav.s["legs"].size()>0) { nav.event("arrivalDue",nav.s["legs"][nav.s["legs"].size()-1]["plannedArrivalUtc"]); }
         }
+        if(!nav.s.hasKey("fitPending")) { nav.s["fitPending"]=false; }
         var gap=utc-copy["savedUtc"]; if(gap<0) { fail("Clock moved backward during interruption"); gap=0; }
         if(nav.s["started"] && !nav.s["finished"]) {
             if(gap>8640000-nav.timers.s["elapsed"]) { fail("Recovery gap exceeds supported session length"); return null; }

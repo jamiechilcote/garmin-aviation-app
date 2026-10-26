@@ -5,7 +5,7 @@ class Navigation {
         plan=FlightPlan.legs(); timers=new FlightTimers();
         s={"schema"=>2,"flight"=>FlightPlan.NAME,"demo"=>FlightPlan.DEMO,"started"=>false,"finished"=>false,
            "startUtc"=>null,"finishUtc"=>null,"index"=>0,"legStart"=>0,"radioPending"=>true,
-           "arrivalAlerted"=>false,"legs"=>[],"checks"=>[],"corrections"=>[],"events"=>[],"fitOutcome"=>"notStarted"};
+           "arrivalAlerted"=>false,"legs"=>[],"checks"=>[],"corrections"=>[],"events"=>[],"fitOutcome"=>"notStarted","fitPending"=>false};
         check=new Clearoff(plan[0]["nm"],plan[0]["gs"]); undoState=null;
     }
     function leg() { return plan[s["index"]]; }
@@ -101,4 +101,3 @@ function deepCopy(input) {
     if(input instanceof Lang.Array) { var a=[]; for(var j=0;j<input.size();j+=1) { a.add(deepCopy(input[j])); } return a; }
     return input;
 }
-

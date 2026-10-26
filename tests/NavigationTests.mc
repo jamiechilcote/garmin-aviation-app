@@ -73,6 +73,7 @@ import Toybox.Test;
     var app = new NavlogApp(); app.testing = true; app.lastMillis = Toybox.System.getTimer(); app.nav.start(1000);
     // Call the same input path used by physical buttons. Reset debounce between simulated presses.
     app.input("up"); app.lastInput=null; app.input("select");
+    Test.assert(app.nav.s["radioPending"]); app.lastInput=null; app.input("select");
     Test.assert(!app.nav.s["radioPending"]);
     app.lastInput=null; app.input("up"); app.lastInput=null; app.input("down");
     app.lastInput=null; app.input("select"); Test.assertEqual(app.nav.s["index"],0);
