@@ -1,0 +1,5 @@
+GPS_ACCEPTANCE_READY: configure playback, close dialog, press physical START
+STARTED FIT recording
+GPS_STATUS GPS fix / recording accuracy=4
+GPS_POSITION [-34.037100, 150.692900]
+GPS_ACCEPTANCE_FINISHED saved=true status=FIT saved elapsed=29

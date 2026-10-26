@@ -1,0 +1,6 @@
+PENDING_PROBE_PHASE 1 initial={startUtc=>null, timerMs=>0, elapsedMs=>0}
+RESTART_LOCAL_STATE finished=true pending=true sessionNull=true
+EXPECTED_NATIVE_IDENTITY {startUtc=>1793047708, timerMs=>7000, elapsedMs=>7984}
+PRODUCTION_GUARD FIT recovery needs review
+CANDIDATE recording=false identity={startUtc=>null, timerMs=>0, elapsedMs=>0}
+CANDIDATE_SAVE_WITHOUT_START true

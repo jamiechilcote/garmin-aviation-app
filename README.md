@@ -57,7 +57,7 @@ Touch taps are consumed without starting or acknowledging actions. A 450 ms guar
 - Undo advancement restores one previous leg and its original timing baseline. Discarded visits and corrected checks remain identifiable in history.
 - Finish and save distinguishes session closure from arrival. An active airborne period closes as **unconfirmed**, with no invented landing. An unreached waypoint remains unreached. The confirmation page explains this.
 - Retry recording attempts GPS/FIT recovery where supported. After finishing, it retries GPS cleanup. Retry recovery re-reads preserved checkpoints.
-- If no FIT session could be created, Finish saves local history and explicitly reports no FIT. If a session object exists but saving keeps failing, choose **Finish local only** and confirm: local timers/history close, the native FIT remains pending, and no landing or arrival is invented. Use Finish and save again to retry that retained FIT before exiting. New flight cannot silently abandon it.
+- If no FIT session could be created, Finish saves local history and explicitly reports no FIT. If a session object exists but saving keeps failing, choose **Finish local only** and confirm: local timers/history close, the native FIT remains pending, and no landing or arrival is invented. Use Finish and save again to retry that retained FIT before exiting. New flight and explicit Exit cannot silently abandon it.
 
 ## Timing and history
 
@@ -85,6 +85,6 @@ The current/latest session and three rotating archived flights are retained. Sta
 
 ## Acceptance status
 
-The expanded simulator suite passes; all three builds compile. Geometry/overlap tests render the requested screens with Garmin's actual fonts, and native FIT saving/lap fields are decoded. **Actual before/after screenshots and injected GPS coordinates were not obtained because desktop control/capture tools were unavailable. UI visual acceptance is still pending.** The saved FIT contains synthetic altitude values, which do not establish physical altitude accuracy.
+Acceptance reverified on 27 October 2026: **54 tests pass; simulator, test and signed-device builds succeed.** Real FR965 simulator screenshots were captured and inspected. Native FIT playback produced nine changing coordinate records and changing altitude, with an unresolved -122 m altitude offset. Finished pending-FIT recovery after restart remains unverified; explicit Exit and New flight block abandonment. See the [acceptance report, screenshots and next physical-watch instructions](evidence/2026-10-27/REPORT.md). Physical readability, recording continuity, accurate altitude and Garmin Connect presentation remain open.
 
 See [testing](docs/TESTING.md), [capture checklist](evidence/SCREENSHOTS.md), [FIT evidence](evidence/FIT-VERIFICATION.md), [audit status](docs/AUDIT.md), [API notes](docs/API-NOTES.md) and [progress](PROGRESS.md). Physical FR965 GPS, battery, display lifecycle, sound/vibration/DND, reboot recovery and Garmin Connect acceptance still require testing.

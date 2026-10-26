@@ -1,0 +1,10 @@
+VISUAL_SCENE navigation
+VISUAL_SCENE running
+VISUAL_SCENE overdue
+VISUAL_SCENE radio
+VISUAL_SCENE waypoint
+VISUAL_SCENE timers
+VISUAL_SCENE recovery
+VISUAL_SCENE finish
+VISUAL_SCENE finished
+VISUAL_SCENE pending

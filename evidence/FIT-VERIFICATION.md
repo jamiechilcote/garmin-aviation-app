@@ -1,3 +1,5 @@
+> 27 October 2026 follow-up: [actual injected coordinate records, altitude offset and pending-save probe](2026-10-27/REPORT.md). The earlier no-coordinate result below remains historical evidence.
+
 # FIT acceptance evidence — remediation
 
 The native integration test calls the production `Recording` class, Garmin ActivityRecording and FitContributor APIs in the FR965 simulator. It creates a continuous flying session with four boundaries: ground, airborne, ground, airborne. The two airborne periods are deliberately synthetic one-second test periods, not detected flights.

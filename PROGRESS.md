@@ -45,3 +45,11 @@
 - Expanded suite: 53 passed. Real Garmin renderer tests cover all requested states plus complete/long-waypoint/local-only variants, validate circle bounds and text overlap, and check clock prominence.
 - Debug, test and signed-device development builds succeed. Existing .gitignore edits remain separate.
 - Actual PNG screenshot review, GPS injection, full native app restart/reboot, physical FR965 and Garmin Connect acceptance are still pending. Evidence documents these gaps rather than claiming them complete.
+
+## Acceptance follow-up — 27 October 2026
+- Reverified latest remote main f3f38a5: original 53 tests passed again; three builds succeeded.
+- Found and fixed explicit Exit abandoning a pending FIT after local finish; regression added. Complete suite now 54 passed, zero failures/errors; all three versions rebuilt successfully (4971b80).
+- Captured and visually inspected actual production navigation and isolated production-renderer scenes in native FR965 simulator. No clipping/overlap observed; no cosmetic source changes made.
+- Native FIT playback verified changing coordinates in nine recorded samples and altitude 28–56 m; altitude is 122 m below matching synthetic input, so accuracy remains unresolved.
+- Pending-native-save probe persisted finished/pending state, but simulator crashed during restart investigation. After restart, candidate native save returned true without a matching recovered FIT. Conservative production guard retained; physical continuity/rebinding remains blocked.
+- Report and physical FR965 instructions: evidence/2026-10-27/REPORT.md. No physical deployment, account upload or Google Sheets integration.

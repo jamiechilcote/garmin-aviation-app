@@ -1,3 +1,5 @@
+> Acceptance follow-up (27 October 2026): [verified screenshots, GPS/FIT evidence, 54 tests, three builds and remaining physical/lifecycle limitations](../evidence/2026-10-27/REPORT.md). The earlier findings below are historical; the follow-up supersedes their screenshot/GPS status.
+
 # Remediation verification — 2026-10-26
 
 ## Baseline and reproduction

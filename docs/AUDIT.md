@@ -1,3 +1,5 @@
+> Acceptance follow-up (27 October 2026): [verified screenshots, GPS/FIT evidence, 54 tests, three builds and remaining physical/lifecycle limitations](../evidence/2026-10-27/REPORT.md). The earlier findings below are historical; the follow-up supersedes their screenshot/GPS status.
+
 # Remediation status — 2026-10-26
 
 The historical audit below was the input to this remediation. Its five concrete findings have been addressed in code and focused regression tests: confirmed vs unconfirmed history, queued/central alerts, recoverable recording/save/cleanup failure states, manual navigation independent of FIT, and validated independent checkpoint fallback. The original report is retained for traceability.

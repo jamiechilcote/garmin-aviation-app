@@ -1,3 +1,5 @@
+> Acceptance follow-up (27 October 2026): [verified screenshots, GPS/FIT evidence, 54 tests, three builds and remaining physical/lifecycle limitations](../evidence/2026-10-27/REPORT.md). The earlier findings below are historical; the follow-up supersedes their screenshot/GPS status.
+
 # API evidence and platform constraints
 
 Reviewed 2026-10-26 against installed SDK 9.3.0 `bin/api.mir`, `doc/Toybox`, `samples/RecordSample`, `samples/MoxyField`, and device package `fr965/fr965.api.debug.xml`.
