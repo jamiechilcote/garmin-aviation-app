@@ -240,3 +240,9 @@ import Toybox.Lang;
     Test.assertEqual(restored.timers.s["periods"][0]["status"],"legacyUnknown"); Test.assert(p.valid(p.snapshot(restored,1030)));
     data["timers"]["airTotal"]=9; Test.assert(!p.valid(data)); return true;
 }
+(:test) function pendingFitBlocksExplicitExit(logger) {
+    var app=new NavlogApp(); app.testing=true; app.nav.start(1000); app.nav.s["fitPending"]=true; app.nav.finish(1100);
+    app.execute(7,1101); Test.assertEqual(app.notice,"Save pending FIT first");
+    app.nav.s["fitPending"]=false; app.recording=new TestRecording(); app.recording.start(); app.notice=null;
+    app.execute(7,1102); Test.assertEqual(app.notice,"Save pending FIT first"); return true;
+}

@@ -100,7 +100,10 @@ class NavlogApp extends Application.AppBase {
             if(recording.session!=null || (nav.s.hasKey("fitPending") && nav.s["fitPending"])) { notice="Unsaved FIT - retry save"; return; }
             if(persistence.archive(nav,utc)) { nav=new Navigation(); recording=new Recording(); remainder=0; lastSaved=0; } return;
         }
-        if(action==7 && (!nav.s["started"] || nav.s["finished"])) { if(!testing) { System.exit(); } return; }
+        if(action==7 && (!nav.s["started"] || nav.s["finished"])) {
+            if(recording.session!=null || nav.s["fitPending"]) { notice="Save pending FIT first"; return; }
+            if(!testing) { System.exit(); } return;
+        }
         if(action==6 || action==7) { notice="Finish flight first"; return; }
         if(action==4 && nav.s["finished"] && recording.session==null && nav.s["fitPending"]) { notice="FIT recovery needs review"; return; }
         if(action==4 && nav.s["finished"] && recording.session!=null) {
