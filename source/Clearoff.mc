@@ -27,7 +27,9 @@ class Clearoff {
     }
     function acknowledge(elapsed, utc) {
         update(elapsed);
-        if (!s["state"].equals("due")) { return null; }
+        if (!s["state"].equals("due") && !s["state"].equals("running")) { return null; }
+        // Ignore a second press during the first two seconds of each new segment.
+        if(elapsed < s["dueElapsed"]-interval()+2) { return null; }
         var record = {"dueUtc"=>s["dueUtc"], "ackUtc"=>utc};
         s["lastAck"] = utc;
         s["state"] = "acknowledged";
@@ -40,4 +42,3 @@ class Clearoff {
         return left > 0 ? left : 0;
     }
 }
-

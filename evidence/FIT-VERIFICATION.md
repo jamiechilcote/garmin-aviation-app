@@ -1,3 +1,5 @@
+> Latest V2 evidence: [actual screenshots, real button flights and decoded GPS/native FIT](v2/REPORT.md). Earlier results below are historical.
+
 > 27 October 2026 follow-up: [actual injected coordinate records, altitude offset and pending-save probe](2026-10-27/REPORT.md). The earlier no-coordinate result below remains historical evidence.
 
 # FIT acceptance evidence — remediation

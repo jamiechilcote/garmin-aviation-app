@@ -1,0 +1,44 @@
+BUTTON select screen=summary state=PLAN_SELECTED action=SELECT FLIGHT leg=0 checks=0 periods=0 native=idle
+BUTTON select screen=confirm state=PLAN_SELECTED action=SELECT FLIGHT leg=0 checks=0 periods=0 native=idle
+BUTTON select screen=nav state=GROUND_ACTIVE action=TAKEOFF leg=0 checks=0 periods=0 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=0 checks=0 periods=1 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=0 periods=1 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=0 periods=1 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=2 periods=1 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON back screen=timers state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON up screen=timers state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON back screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON select screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON back screen=timers state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON select screen=alerts state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON up screen=alerts state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON select screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=1 native=recording
+BUTTON select screen=nav state=LANDED action=TAKEOFF leg=0 checks=3 periods=1 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=2 native=recording
+BUTTON back screen=timers state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=2 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=2 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_COMPLETE action=CHECKS COMPLETE leg=0 checks=3 periods=2 native=recording
+BUTTON select screen=radio state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON back screen=nav state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON select screen=radio state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=2 native=recording
+BUTTON select screen=completed state=FINISHED action=EXIT leg=1 checks=0 periods=2 native=saved
+END native=saved outcome=saved pending=false legs=[{gs=>100.000000, actualSeconds=>115, legClosedUtc=>1793081065, index=>0, waypointReachedUtc=>1793081065, plannedArrivalUtc=>1793081850, startUtc=>1793080950, heading=>135, closure=>waypoint}, {gs=>120.000000, actualSeconds=>33, legClosedUtc=>1793081098, index=>1, waypointReachedUtc=>null, plannedArrivalUtc=>1793082025, startUtc=>1793081065, heading=>270, closure=>sessionEnded}] checks=[{dueUtc=>1793081312, corrected=>false, leg=>0, ackUtc=>1793080955}, {dueUtc=>1793081315, corrected=>false, leg=>0, ackUtc=>1793080956}, {dueUtc=>1793081136, corrected=>false, leg=>0, ackUtc=>1793080981}] periods=[{landingUtc=>1793081061, takeoffUtc=>1793080951, status=>landed, closedUtc=>1793081061, seconds=>110}, {landingUtc=>null, takeoffUtc=>1793081062, status=>unconfirmed, closedUtc=>1793081098, seconds=>36}]

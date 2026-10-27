@@ -1,7 +1,16 @@
-// Every numeric value is invented demonstration data, never operational data.
+// All bundled values are invented demo fixtures, never operational navigation data.
 module FlightPlan {
-    const DEMO = true;
-    const NAME = "Camden - Goulburn Return";
+    const DEMO=true;
+    const NAME="Camden - Goulburn Return";
+    const DEFAULT_ID="demo-return-r1";
+    function catalogue() {
+        return [
+            {"id"=>DEFAULT_ID,"name"=>"YSCN-YGLB-YSCN","departure"=>"YSCN","destination"=>"YSCN","revision"=>"1","date"=>"2026-10-27","demo"=>true},
+            {"id"=>"demo-outbound-r1","name"=>"YSCN-YGLB","departure"=>"YSCN","destination"=>"YGLB","revision"=>"1","date"=>"2026-10-27","demo"=>true}
+        ];
+    }
+    function find(id) { var plans=catalogue(); for(var i=0;i<plans.size();i+=1) { if(plans[i]["id"].equals(id)) { return plans[i]; } } return null; }
+    function legsFor(id) { var all=legs(); if(id.equals("demo-outbound-r1")) { return [all[0],all[1]]; } return all; }
     function legs() {
         return [
             {"from"=>"YSCN", "to"=>"YSHL", "heading"=>135, "altitude"=>3500, "nm"=>25.0, "gs"=>100.0, "active"=>"123.450", "standby"=>"124.550"},
@@ -11,5 +20,3 @@ module FlightPlan {
         ];
     }
 }
-
-

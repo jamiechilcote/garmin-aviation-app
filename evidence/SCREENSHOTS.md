@@ -1,3 +1,5 @@
+> Latest V2 evidence: [actual screenshots, real button flights and decoded GPS/native FIT](v2/REPORT.md). Earlier results below are historical.
+
 # Actual simulator screenshots — 27 October 2026
 
 [Verified capture matrix and visual findings](2026-10-27/REPORT.md#actual-screenshots-and-visual-review).

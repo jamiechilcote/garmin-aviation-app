@@ -42,11 +42,17 @@ class Persistence {
         if(!dict(data,["version","navigation","timers","clearoff","generation","savedUtc","undo"]) ||
           !integer(data["version"],1,2) || !integer(data["generation"],0,2147483646) || !number(data["savedUtc"],0,2147483647)) { return false; }
         var n=data["navigation"]; var t=data["timers"];
+        var planCount=4;
+        if(n instanceof Lang.Dictionary && n.hasKey("planId") && n["planId"]!=null) {
+            if(!(n["planId"] instanceof Lang.String)) { return false; }
+            var plan=FlightPlan.find(n["planId"]); if(plan==null || !n.hasKey("planRevision") || !plan["revision"].equals(n["planRevision"])) { return false; }
+            planCount=FlightPlan.legsFor(n["planId"]).size();
+        }
         if(!dict(n,["flight","started","finished","startUtc","finishUtc","index","legStart","radioPending","arrivalAlerted","legs","checks","corrections"]) ||
           !dict(t,["elapsed","airStart","airTotal","periods"])) { return false; }
         if(!(n["flight"] instanceof Lang.String) || n["flight"].length()>120 || !(n["started"] instanceof Lang.Boolean) ||
           !(n["finished"] instanceof Lang.Boolean) || !(n["radioPending"] instanceof Lang.Boolean) || !(n["arrivalAlerted"] instanceof Lang.Boolean) ||
-          !stamp(n["startUtc"]) || !stamp(n["finishUtc"]) || !integer(n["index"],0,3) || !number(t["elapsed"],0,8640000) ||
+          !stamp(n["startUtc"]) || !stamp(n["finishUtc"]) || !integer(n["index"],0,planCount-1) || !number(t["elapsed"],0,8640000) ||
           !number(n["legStart"],0,t["elapsed"]) || !number(t["airTotal"],0,t["elapsed"]) ||
           !(t["airStart"]==null || number(t["airStart"],0,t["elapsed"])) ||
           !array(n["legs"],4) || !array(n["checks"],512) || !array(n["corrections"],512) || !array(t["periods"],256)) { return false; }
@@ -85,12 +91,14 @@ class Persistence {
         if(u!=null && (!dict(u,["index","legStart","check","arrivalAlerted","radioPending","checkCount"]) ||
           !integer(u["index"],0,n["index"]) || !number(u["legStart"],0,t["elapsed"]) || !(u["arrivalAlerted"] instanceof Lang.Boolean) ||
           !(u["radioPending"] instanceof Lang.Boolean) || !integer(u["checkCount"],0,n["checks"].size()) || !checkValid(u["check"],n["checks"].size()))) { return false; }
-        if(u!=null && (n["index"]-u["index"]>1 || (n["index"]==u["index"] && (n["index"]!=3 || !data["clearoff"]["state"].equals("legCompleted"))))) { return false; }
+        if(u!=null && (n["index"]-u["index"]>1 || (n["index"]==u["index"] && (n["index"]!=planCount-1 || !data["clearoff"]["state"].equals("legCompleted"))))) { return false; }
         if(data["version"]==2) {
+            if(n.hasKey("finishRequested") && !(n["finishRequested"] instanceof Lang.Boolean)) { return false; }
+            if(n.hasKey("discarded") && (!(n["discarded"] instanceof Lang.Boolean) || (n["discarded"] && n["started"]))) { return false; }
             if(n.hasKey("fitPending") && !(n["fitPending"] instanceof Lang.Boolean)) { return false; }
-            if(!dict(n,["schema","events","demo","fitOutcome"]) || n["schema"]!=2 || !(n["demo"] instanceof Lang.Boolean) || !choice(n["fitOutcome"],["notStarted","recording","unavailable","paused","savePending","saved","localOnly","legacyUnknown","idle"]) || !array(n["events"],32)) { return false; }
+            if(!dict(n,["schema","events","demo","fitOutcome"]) || n["schema"]!=2 || !(n["demo"] instanceof Lang.Boolean) || !choice(n["fitOutcome"],["notStarted","recording","unavailable","paused","savePending","saved","localOnly","legacyUnknown","idle","discarded"]) || !array(n["events"],32)) { return false; }
             for(var e=0;e<n["events"].size();e+=1) { var ev=n["events"][e];
-                if(!dict(ev,["kind","leg","dueUtc"]) || !choice(ev["kind"],["checkDue","arrivalDue"]) || !integer(ev["leg"],0,3) || !number(ev["dueUtc"],0,2147483647)) { return false; }
+                if(!dict(ev,["kind","leg","dueUtc"]) || !choice(ev["kind"],["checkDue","arrivalDue","radioChange"]) || !integer(ev["leg"],0,3) || !number(ev["dueUtc"],0,2147483647)) { return false; }
             }
         }
         return true;
@@ -125,12 +133,23 @@ class Persistence {
             if(nav.s["arrivalAlerted"] && nav.s["legs"].size()>0) { nav.event("arrivalDue",nav.s["legs"][nav.s["legs"].size()-1]["plannedArrivalUtc"]); }
         }
         if(!nav.s.hasKey("fitPending")) { nav.s["fitPending"]=false; }
+        if(!nav.s.hasKey("planId")) { nav.s["planId"]=nav.s["started"] ? FlightPlan.DEFAULT_ID : null; nav.s["planRevision"]=nav.s["started"] ? "1" : null; }
+        if(nav.s["planId"]!=null) { nav.plan=FlightPlan.legsFor(nav.s["planId"]); }
+        if(!nav.s.hasKey("finishRequested")) { nav.s["finishRequested"]=false; }
+        if(!nav.s.hasKey("discarded")) { nav.s["discarded"]=false; }
         var gap=utc-copy["savedUtc"]; if(gap<0) { fail("Clock moved backward during interruption"); gap=0; }
         if(nav.s["started"] && !nav.s["finished"]) {
             if(gap>8640000-nav.timers.s["elapsed"]) { fail("Recovery gap exceeds supported session length"); return null; }
             nav.timers.s["elapsed"]+=gap; nav.s["corrections"].add({"utc"=>utc,"interruptionSeconds"=>gap}); nav.tick();
         }
         return nav;
+    }
+    function discardCurrent(utc) {
+        // A newer empty tombstone prevents fallback to the discarded flight after restart.
+        var empty=new Navigation(); empty.s["discarded"]=true; empty.s["fitOutcome"]="discarded";
+        if(!save(empty,utc)) { return false; }
+        try { Storage.deleteValue(prefix+"checkpoint"+((generation+1)%2)); return true; }
+        catch(e) { fail("Discard log cleanup failed"); return false; }
     }
     function archive(nav,utc) {
         try { var slot=Storage.getValue(prefix+"historyNext"); if(slot==null) { slot=0; }

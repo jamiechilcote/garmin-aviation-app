@@ -1,0 +1,14 @@
+BUTTON select screen=summary state=PLAN_SELECTED action=SELECT FLIGHT leg=0 checks=0 periods=0 native=idle
+BUTTON select screen=confirm state=PLAN_SELECTED action=SELECT FLIGHT leg=0 checks=0 periods=0 native=idle
+BUTTON select screen=nav state=GROUND_ACTIVE action=TAKEOFF leg=0 checks=0 periods=0 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=0 checks=0 periods=1 native=recording
+BUTTON back screen=timers state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=0 checks=0 periods=1 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=0 checks=0 periods=1 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=0 checks=0 periods=1 native=recording
+BUTTON select screen=radio state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=1 native=recording
+BUTTON back screen=nav state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=1 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=1 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=1 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=1 checks=0 periods=1 native=recording
+BUTTON select screen=completed state=FINISHED action=EXIT leg=1 checks=0 periods=1 native=saved
+END native=saved outcome=saved pending=false legs=[{gs=>100.000000, actualSeconds=>5, legClosedUtc=>1793081573, index=>0, waypointReachedUtc=>1793081573, plannedArrivalUtc=>1793082467, startUtc=>1793081567, heading=>135, closure=>waypoint}, {gs=>120.000000, actualSeconds=>6, legClosedUtc=>1793081578, index=>1, waypointReachedUtc=>null, plannedArrivalUtc=>1793082533, startUtc=>1793081573, heading=>270, closure=>sessionEnded}] checks=[] periods=[{landingUtc=>null, takeoffUtc=>1793081568, status=>unconfirmed, closedUtc=>1793081578, seconds=>10}]

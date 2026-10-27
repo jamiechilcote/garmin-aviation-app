@@ -4,9 +4,15 @@ class Navigation {
     function initialize() {
         plan=FlightPlan.legs(); timers=new FlightTimers();
         s={"schema"=>2,"flight"=>FlightPlan.NAME,"demo"=>FlightPlan.DEMO,"started"=>false,"finished"=>false,
-           "startUtc"=>null,"finishUtc"=>null,"index"=>0,"legStart"=>0,"radioPending"=>true,
-           "arrivalAlerted"=>false,"legs"=>[],"checks"=>[],"corrections"=>[],"events"=>[],"fitOutcome"=>"notStarted","fitPending"=>false};
+           "startUtc"=>null,"finishUtc"=>null,"index"=>0,"legStart"=>0,"radioPending"=>false,
+           "arrivalAlerted"=>false,"legs"=>[],"checks"=>[],"corrections"=>[],"events"=>[],"fitOutcome"=>"notStarted","fitPending"=>false,"planId"=>null,"planRevision"=>null,"finishRequested"=>false,"discarded"=>false};
         check=new Clearoff(plan[0]["nm"],plan[0]["gs"]); undoState=null;
+    }
+    function selectPlan(id) {
+        if(s["started"] || s["fitPending"]) { return false; }
+        var info=FlightPlan.find(id); if(info==null) { return false; }
+        plan=FlightPlan.legsFor(id); s["planId"]=id; s["planRevision"]=info["revision"]; s["flight"]=info["name"]; s["demo"]=info["demo"];
+        check=new Clearoff(plan[0]["nm"],plan[0]["gs"]); return true;
     }
     function leg() { return plan[s["index"]]; }
     function start(utc) {
@@ -14,7 +20,7 @@ class Navigation {
         s["started"]=true; s["startUtc"]=utc; activate(utc);
     }
     function activate(utc) {
-        s["legStart"]=timers.s["elapsed"]; s["radioPending"]=true; s["arrivalAlerted"]=false;
+        s["legStart"]=timers.s["elapsed"]; s["arrivalAlerted"]=false;
         check=new Clearoff(leg()["nm"],leg()["gs"]);
         s["legs"].add({"index"=>s["index"],"startUtc"=>utc,"legClosedUtc"=>null,"waypointReachedUtc"=>null,
           "plannedArrivalUtc"=>utc+Toybox.Math.ceil(leg()["nm"]*3600.0/leg()["gs"]).toNumber(),
@@ -49,8 +55,12 @@ class Navigation {
         tick();
         if(check.s["state"].equals("idle")) { check.start(timers.s["elapsed"],utc); }
         else {
+            var wasDue=check.s["state"].equals("due");
             var record=check.acknowledge(timers.s["elapsed"],utc);
-            if(record!=null) { s["checks"][check.s["historyIndex"]]["ackUtc"]=utc; }
+            if(record!=null) {
+                if(wasDue) { s["checks"][check.s["historyIndex"]]["ackUtc"]=utc; }
+                else { s["checks"].add({"leg"=>s["index"],"dueUtc"=>record["dueUtc"],"ackUtc"=>utc,"corrected"=>false}); }
+            }
         }
     }
     function closeLeg(utc,reached) {
@@ -68,18 +78,23 @@ class Navigation {
           "arrivalAlerted"=>s["arrivalAlerted"],"radioPending"=>s["radioPending"],"checkCount"=>s["checks"].size()};
         closeLeg(utc,true);
         if(s["index"]==plan.size()-1) { check.s["state"]="legCompleted"; }
-        else { s["index"]+=1; activate(utc); }
+        else {
+            var prior=leg(); s["index"]+=1; activate(utc);
+            var radioChanged=!prior["active"].equals(leg()["active"]) || !prior["standby"].equals(leg()["standby"]);
+            s["radioPending"]=s["radioPending"] || radioChanged;
+            if(radioChanged) { event("radioChange",utc); }
+        }
     }
     function undo(utc) {
         if(undoState==null || s["finished"]) { return; }
-        var discarded=null;
+        var priorRadio=leg(); var discarded=null;
         if(s["index"]!=undoState["index"]) {
             discarded=s["legs"][s["legs"].size()-1]; s["legs"].remove(discarded);
         }
         s["corrections"].add({"utc"=>utc,"restoredLeg"=>undoState["index"],"discardedLeg"=>discarded});
         for(var i=undoState["checkCount"];i<s["checks"].size();i+=1) { s["checks"][i]["corrected"]=true; }
         s["index"]=undoState["index"]; s["legStart"]=undoState["legStart"];
-        s["arrivalAlerted"]=undoState["arrivalAlerted"]; s["radioPending"]=true; check.s=undoState["check"];
+        s["arrivalAlerted"]=undoState["arrivalAlerted"]; s["radioPending"]=undoState["radioPending"] || !priorRadio["active"].equals(leg()["active"]) || !priorRadio["standby"].equals(leg()["standby"]); check.s=undoState["check"];
         var record=s["legs"][s["legs"].size()-1];
         record["legClosedUtc"]=null; record["waypointReachedUtc"]=null; record["actualSeconds"]=null; record["closure"]=null;
         undoState=null; tick();

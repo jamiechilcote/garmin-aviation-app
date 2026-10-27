@@ -27,3 +27,13 @@ java -cp "$sdk\bin\fit-graph.jar" com.garmin.fit.csv.CSVTool -i -b 'C:\path\to\s
 Input: 45 seconds/samples on a synthetic path (-34.04 + i*0.0001, 150.69 + i*0.0001), altitude 150+i metres. Native simulator Activities directory: `%LOCALAPPDATA%\Temp\com.garmin.connectiq\GARMIN\Activities`. App reload resets playback source; configure after loading. Restore GPS quality after testing. Current findings, including altitude offset, are in `evidence/2026-10-27/REPORT.md`.
 
 Pending driver: `pending.jungle` / `pending-acceptance.prg`. On its first run it starts a real disposable native recording, locally finishes at 8 seconds, persists identity and exits at 9 seconds. On relaunch it logs restored local state, production refusal, and an experimental unstarted candidate save. It persists phase in its own app ID. It bypasses the explicit Exit action intentionally to probe external termination; it does not prove production Exit allowed abandonment. It caused a native simulator crash during this investigation. Run only with disposable simulator data and preserve evidence; no automatic reset/discard is supplied. A true save boolean is not proof the original activity was recovered.
+
+## V2 acceptance entry points
+
+Use `v2.jungle` / `bin/v2-button.prg` to compile `V2ButtonApp`. Its only changes are a separate app/store identity and console evidence. Drive the physical simulator buttons normally; source controller/recording/view behaviour is production. Final traces and screenshot matrix are in `evidence/v2/REPORT.md`.
+
+Use `v2-proof.jungle` / `bin/v2-proof.prg` for labelled frozen fixtures. START cycles overdue, recording failure, unresolved review, compiled icon transparency and airborne checks-idle. It writes no checkpoints and creates no native recording. The extra bitmap resource compiles the same icon SVG separately from the launcher reference, to inspect transparency on coloured backgrounds.
+
+The GPS driver's V2 entry starts at a selected summary: configure native FIT playback first, then press START twice for the separate confirmation. It records takeoff after two seconds, starts checks after four, lands after 24 and attempts Finish & Save after 28. It exits directly only after native state is saved; failed saves remain protected. See current V2 GPS evidence rather than assuming the previous altitude offset is fixed. Restore GPS quality afterwards.
+
+`VisualAcceptanceApp` and `PendingAcceptanceApp` are historical investigation helpers. For exact pre-V2 reproduction use commit a2c71f8 and its report. Do not interpret their old interaction fixtures as current end-to-end V2 acceptance.

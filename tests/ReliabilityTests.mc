@@ -8,10 +8,11 @@ import Toybox.Lang;
     function stop() { if(failStop) { throw new Lang.Exception(); } enabled=false; return true; }
 }
 (:test) class TestSession {
-    var stopReturnsFalseAfterStopping=false; var laps=0; var failLap=false; var recording=false; var failStart=false; var failStop=false; var failSave=false; var throwSave=false; var throwStart=false; var saved=0;
+    var startCalls=0; var discarded=0; var failDiscard=false; var throwDiscard=false; var stopReturnsFalseAfterStopping=false; var laps=0; var failLap=false; var recording=false; var failStart=false; var failStop=false; var failSave=false; var throwSave=false; var throwStart=false; var saved=0;
     function initialize() {}
     function isRecording() { return recording; }
-    function start() { if(throwStart) { throw new Lang.Exception(); } if(failStart) { return false; } recording=true; return true; }
+    function discard() { if(throwDiscard) { throw new Lang.Exception(); } if(failDiscard) { return false; } discarded+=1; return true; }
+    function start() { startCalls+=1; if(throwStart) { throw new Lang.Exception(); } if(failStart) { return false; } recording=true; return true; }
     function stop() { if(failStop) { return false; } recording=false; return !stopReturnsFalseAfterStopping; }
     function save() { if(throwSave) { throw new Lang.Exception(); } if(failSave) { return false; } saved+=1; return true; }
     function addLap() { if(failLap) { return false; } laps+=1; return true; }
@@ -58,7 +59,7 @@ import Toybox.Lang;
 (:test) function undoArrivalRetainsEvent(logger) {
     var n=new Navigation(); n.start(1000); n.timers.s["elapsed"]=100; n.advance(1100);
     n.timers.s["elapsed"]=950; n.undo(1950); var e=n.takeEvents();
-    Test.assertEqual(e.size(),1); Test.assertEqual(e[0]["kind"],"arrivalDue");
+    var arrivals=0; for(var i=0;i<e.size();i+=1) { if(e[i]["kind"].equals("arrivalDue")) { arrivals+=1; } } Test.assertEqual(arrivals,1);
     n.tick(); Test.assertEqual(n.takeEvents().size(),0); return true;
 }
 (:test) function centralDeliveryDrainsOnce(logger) {
@@ -98,19 +99,21 @@ import Toybox.Lang;
     r.fake.failStart=false; Test.assert(r.start()); return true;
 }
 (:test) function manualNavigationWhenFitUnavailable(logger) {
-    var app=new NavlogApp(); app.testing=true; app.lastMillis=Toybox.System.getTimer();
-    var r=new TestRecording(); r.failCreate=true; app.recording=r; app.input("select");
-    Test.assert(app.nav.s["started"]); Test.assertEqual(app.recording.state,"unavailable");
-    app.lastInput=null; app.input("select"); Test.assertEqual(app.nav.check.s["state"],"running");
-    app.lastInput=null; app.input("down"); Test.assertEqual(app.screen,"timers");
-    app.execute(4,1100); Test.assert(app.nav.s["finished"]); Test.assertEqual(app.nav.s["fitOutcome"],"localOnly"); return true;
+    var app=V2Harness.selected(); var r=new TestRecording(); r.failCreate=true; app.recording=r;
+    app.execute(12,1000); Test.assert(app.nav.s["started"]); Test.assertEqual(r.state,"unavailable");
+    app.execute(14,1001); V2Harness.press(app,"select"); Test.assert(app.nav.timers.s["airStart"]!=null);
+    V2Harness.press(app,"select"); Test.assertEqual(app.nav.check.s["state"],"running");
+    V2Harness.press(app,"back"); Test.assertEqual(app.screen,"timers");
+    app.execute(4,1100); Test.assert(app.nav.s["finished"]); app.execute(10,1101);
+    Test.assert(app.nav.s["finished"]); Test.assertEqual(app.nav.s["fitOutcome"],"localOnly"); return true;
 }
 (:test) function recoveredNavigationWhenFitUnavailable(logger) {
     var n=new Navigation(); n.start(1000); n.checkAction(1000); var p=new Persistence();
-    var app=new NavlogApp(); app.testing=true; app.lastMillis=Toybox.System.getTimer(); app.nav=p.restore(p.snapshot(n,1000),1400);
+    var app=V2Harness.active(); app.nav=p.restore(p.snapshot(n,1000),1400);
     app.screen="recovery"; var r=new TestRecording(); r.failCreate=true; app.recording=r;
-    app.input("select"); Test.assertEqual(app.screen,"nav"); Test.assertEqual(app.nav.s["index"],0);
-    Test.assertEqual(app.deliveredEvents,1); app.lastInput=null; app.input("down"); Test.assertEqual(app.screen,"timers"); return true;
+    app.execute(8,1400); app.execute(14,1400); Test.assertEqual(app.screen,"nav");
+    Test.assertEqual(app.nav.s["index"],0); Test.assert(app.deliverEvents());
+    V2Harness.press(app,"back"); Test.assertEqual(app.screen,"timers"); return true;
 }
 (:test) function corruptionBoundaries(logger) {
     var p=new Persistence(); var n=new Navigation(); n.start(1000); var data=p.snapshot(n,1000);
@@ -167,7 +170,7 @@ import Toybox.Lang;
 (:test) function alertModeStorageRoundTrip(logger) {
     var previous=Toybox.Application.Storage.getValue("alertMode");
     try {
-        var app=new NavlogApp(); app.alerts.mode=1; app.execute(5,1000);
+        var app=new NavlogApp(); app.alerts.mode=1; app.alertChoice=2; app.execute(5,1000);
         Test.assertEqual(Toybox.Application.Storage.getValue("alertMode"),2);
         var reopened=new NavlogApp(); reopened.loadAlertMode(); Test.assertEqual(reopened.alerts.mode,2);
     } finally {

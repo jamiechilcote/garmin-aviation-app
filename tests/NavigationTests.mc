@@ -70,15 +70,11 @@ import Toybox.Test;
     Test.assertEqual(n.s["index"],3); return true;
 }
 (:test) function radioAndConfirmation(logger) {
-    var app = new NavlogApp(); app.testing = true; app.lastMillis = Toybox.System.getTimer(); app.nav.start(1000);
-    // Call the same input path used by physical buttons. Reset debounce between simulated presses.
-    app.input("up"); app.lastInput=null; app.input("select");
-    Test.assert(app.nav.s["radioPending"]); app.lastInput=null; app.input("select");
-    Test.assert(!app.nav.s["radioPending"]);
-    app.lastInput=null; app.input("up"); app.lastInput=null; app.input("down");
-    app.lastInput=null; app.input("select"); Test.assertEqual(app.nav.s["index"],0);
-    app.lastInput=null; app.input("back"); Test.assertEqual(app.nav.s["index"],0);
-    return true;
+    var app=V2Harness.active(); app.execute(1,1100); Test.assertEqual(app.screen,"radio");
+    V2Harness.press(app,"back"); Test.assert(app.nav.s["radioPending"]); Test.assertEqual(app.screen,"nav");
+    app.selectAction(13,"menu"); V2Harness.press(app,"select"); Test.assert(!app.nav.s["radioPending"]);
+    app.openMenu(false); V2Harness.press(app,"select"); Test.assertEqual(app.screen,"confirm");
+    var index=app.nav.s["index"]; V2Harness.press(app,"back"); Test.assertEqual(app.nav.s["index"],index); return true;
 }
 (:test) function monotonicRollover(logger) {
     Test.assertEqual(monotonicDelta(-2147483600,2147483600),96l);
@@ -86,7 +82,7 @@ import Toybox.Test;
 }
 (:test) function repeatedButtonIgnored(logger) {
     var app = new NavlogApp(); app.testing=true; app.lastMillis=Toybox.System.getTimer(); app.nav.start(1000);
-    app.screen="menu"; app.selected=1; app.input("select");
+    app.screen="menu"; app.selected=0; app.input("select");
     app.input("select"); Test.assertEqual(app.nav.s["index"],0);
     app.lastInput=null; app.input("select"); Test.assertEqual(app.nav.s["index"],1); return true;
 }

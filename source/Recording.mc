@@ -11,7 +11,7 @@ class Recording {
         try { cleanupWarning=!gps.stop(); } catch(e) { cleanupWarning=true; }
     }
     function start() {
-        if(state.equals("saved")) { return false; }
+        if(state.equals("saved") || state.equals("discarded")) { return false; }
         warning=false;
         var gpsOk=false; try { gpsOk=gps.start(); } catch(e) { gpsOk=false; }
         try {
@@ -79,6 +79,17 @@ class Recording {
         session=null; airborneField=null; state="saved"; warning=false; status="FIT saved";
         cleanupGps(); if(cleanupWarning) { status="FIT saved / GPS cleanup"; warning=true; }
         return true;
+    }
+    function discard() {
+        if(state.equals("discarded")) { return true; }
+        if(state.equals("saved")) { status="Already saved - cannot discard"; return false; }
+        try {
+            if(session!=null) {
+                if(session.isRecording() && !session.stop()) { warning=true; status="Cannot stop for discard"; return false; }
+                if(!session.discard()) { resumeAfterSaveFailure(); status="Discard failed - retained"; return false; }
+            }
+        } catch(e) { warning=true; status="Discard uncertain - retained"; return false; }
+        session=null; airborneField=null; state="discarded"; status="Flight discarded"; warning=false; cleanupGps(); return true;
     }
     function suspend() {
         if(session!=null && !state.equals("saved")) {

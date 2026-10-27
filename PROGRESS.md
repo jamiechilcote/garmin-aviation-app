@@ -53,3 +53,15 @@
 - Native FIT playback verified changing coordinates in nine recorded samples and altitude 28–56 m; altitude is 122 m below matching synthetic input, so accuracy remains unresolved.
 - Pending-native-save probe persisted finished/pending state, but simulator crashed during restart investigation. After restart, candidate native save returned true without a matching recovered FIT. Conservative production guard retained; physical continuity/rebinding remains blocked.
 - Report and physical FR965 instructions: evidence/2026-10-27/REPORT.md. No physical deployment, account upload or Google Sheets integration.
+
+## V2 — physical-use workflow improvements, 27 October 2026
+- Inspected current main a2c71f8 and prior evidence; unchanged 54-test baseline passed before edits.
+- Added two bundled demo plans, persisted IDs/revisions, selection, summary and separate Start Flight confirmation.
+- Added derived flight states and contextual START: Takeoff, Start checks, Complete check. BACK opens timers; UP/DOWN opens last/first contextual action. Actions wrap through timers.
+- Enlarged measured navigation values, retained high-contrast state/action/radio/route information, and removed the icon's embedded opaque background.
+- Enabled early acknowledgement with unchanged fixed planned intervals, original due/actual history and a two-second new-interval guard. Expanded undo coverage.
+- Added change-only radio prompts/pending retention and cancellable four-mode alert selection. Maintenance options moved to contextual recovery screens.
+- Added local-end freeze on failed finish, verified native/local completion before exit, safe native discard/tombstones and continued unknown-session safeguards.
+- Final suite: 82 passed, zero failures/errors; debug/test/signed-device builds successful. Existing dictionary type warnings remain.
+- Actual button flight saved one flying FIT with two airborne periods; separate V2 GPS playback saved nine changing coordinate samples and changing altitude with unresolved -19.8 m offset (earlier -122 m).
+- Real screenshots inspected; fixtures and real button evidence distinguished. Compiled icon alpha verified; physical launcher/readability/reboot/Connect acceptance remains open. See evidence/v2/REPORT.md and docs/USER-GUIDE.md.
