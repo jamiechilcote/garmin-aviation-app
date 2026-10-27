@@ -1,3 +1,5 @@
+> Latest V3 UI acceptance: [92 passing tests, three builds, actual simulator screenshots, measured size/space comparison and physical-size preview](../evidence/v3/REPORT.md). Flight/recording/controller logic is retained; earlier version reports below are historical.
+
 > V2 (27 October 2026): [82 passing tests, three builds, button-flight/FIT evidence, screenshots and exact remaining limits](../evidence/v2/REPORT.md). V2 changes and controls are described in [the user guide](USER-GUIDE.md); earlier sections below describe previous versions.
 
 > Acceptance follow-up (27 October 2026): [verified screenshots, GPS/FIT evidence, 54 tests, three builds and remaining physical/lifecycle limitations](../evidence/2026-10-27/REPORT.md). The earlier findings below are historical; the follow-up supersedes their screenshot/GPS status.

@@ -41,7 +41,7 @@ import Toybox.Graphics;
             if(overlap) { logger.error("Overlap in "+scene+": "+ar["text"]+" / "+br["text"]); }
             Test.assert(!overlap);
         } }
-        if(app.screen.equals("radio")) { Test.assert(view.bounds[1]["h"]>view.bounds[3]["h"]); }
+        if(app.screen.equals("radio")) { Test.assert(view.bounds[0]["text"].equals("RADIO")); }
         logger.debug("Rendered within circle: "+scene+" ("+view.bounds.size()+" text boxes)");
     }
     return true;

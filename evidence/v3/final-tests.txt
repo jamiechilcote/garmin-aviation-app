@@ -1,0 +1,410 @@
+------------------------------------------------------------------------------
+Executing test clearoffInterval...
+PASS
+------------------------------------------------------------------------------
+Executing test acknowledgementAnchor...
+PASS
+------------------------------------------------------------------------------
+Executing test shortenedFinal...
+PASS
+------------------------------------------------------------------------------
+Executing test manualWaypoints...
+PASS
+------------------------------------------------------------------------------
+Executing test independentAirborne...
+PASS
+------------------------------------------------------------------------------
+Executing test hourBoundary...
+PASS
+------------------------------------------------------------------------------
+Executing test accidentalInputs...
+PASS
+------------------------------------------------------------------------------
+Executing test unacknowledgedHistory...
+PASS
+------------------------------------------------------------------------------
+Executing test restartRecovery...
+PASS
+------------------------------------------------------------------------------
+Executing test finalLegUndo...
+PASS
+------------------------------------------------------------------------------
+Executing test radioAndConfirmation...
+PASS
+------------------------------------------------------------------------------
+Executing test monotonicRollover...
+PASS
+------------------------------------------------------------------------------
+Executing test repeatedButtonIgnored...
+PASS
+------------------------------------------------------------------------------
+Executing test persistentRoundTrip...
+PASS
+------------------------------------------------------------------------------
+Executing test finishingMustNotInventLanding...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveryMustRetainDueEvent...
+PASS
+------------------------------------------------------------------------------
+Executing test finishEarlyHistory...
+PASS
+------------------------------------------------------------------------------
+Executing test finishAirborneIncomplete...
+PASS
+------------------------------------------------------------------------------
+Executing test normalLandingThenFinish...
+PASS
+------------------------------------------------------------------------------
+Executing test actualWaypointSeparate...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveryDueExactlyOnce...
+PASS
+------------------------------------------------------------------------------
+Executing test undoArrivalRetainsEvent...
+PASS
+------------------------------------------------------------------------------
+Executing test centralDeliveryDrainsOnce...
+PASS
+------------------------------------------------------------------------------
+Executing test saveCleanupCannotUndoSuccess...
+PASS
+------------------------------------------------------------------------------
+Executing test failedSaveResumesFit...
+PASS
+------------------------------------------------------------------------------
+Executing test failedSaveAndRestartIsExplicit...
+PASS
+------------------------------------------------------------------------------
+Executing test stopFailureDoesNotSave...
+PASS
+------------------------------------------------------------------------------
+Executing test gpsFailureDoesNotBlockFit...
+PASS
+------------------------------------------------------------------------------
+Executing test fitCreationCleansGps...
+PASS
+------------------------------------------------------------------------------
+Executing test fitStartFailureRetry...
+PASS
+------------------------------------------------------------------------------
+Executing test manualNavigationWhenFitUnavailable...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveredNavigationWhenFitUnavailable...
+PASS
+------------------------------------------------------------------------------
+Executing test corruptionBoundaries...
+PASS
+------------------------------------------------------------------------------
+Executing test independentUnreadableCheckpoint...
+PASS
+------------------------------------------------------------------------------
+Executing test progressMatchesAcknowledgements...
+PASS
+------------------------------------------------------------------------------
+Executing test fitAirborneLapBoundaries...
+PASS
+------------------------------------------------------------------------------
+Executing test lapFailureDoesNotInventFlightEvents...
+PASS
+------------------------------------------------------------------------------
+Executing test nativeFlyingFitLapSmoke...
+DEBUG (23:30): Saved native simulator FIT: two synthetic airborne periods, real elapsed lap boundaries, GPS not asserted.
+PASS
+------------------------------------------------------------------------------
+Executing test alertModeStorageRoundTrip...
+PASS
+------------------------------------------------------------------------------
+Executing test supportedAttentionModes...
+PASS
+------------------------------------------------------------------------------
+Executing test corruptUndoAndStickyErrors...
+PASS
+------------------------------------------------------------------------------
+Executing test ambiguousStopFailureResumes...
+PASS
+------------------------------------------------------------------------------
+Executing test cleanupRetryAfterFinished...
+PASS
+------------------------------------------------------------------------------
+Executing test recoveryBackShowsManualRecordingWarning...
+PASS
+------------------------------------------------------------------------------
+Executing test localFinishRetainsUnsavedFit...
+PASS
+------------------------------------------------------------------------------
+Executing test lateSavePreservesLocalEndAndIncompletePhase...
+PASS
+------------------------------------------------------------------------------
+Executing test pendingFitPreventsSilentNewFlightAfterRestart...
+PASS
+------------------------------------------------------------------------------
+Executing test legacyCheckpointMigrationIsConservative...
+PASS
+------------------------------------------------------------------------------
+Executing test pendingFitBlocksExplicitExit...
+PASS
+------------------------------------------------------------------------------
+Executing test clockDisplayBoundaries...
+PASS
+------------------------------------------------------------------------------
+Executing test rendererCircularBounds...
+DEBUG (23:30): Rendered within circle: idle (10 text boxes)
+DEBUG (23:30): Rendered within circle: running (9 text boxes)
+DEBUG (23:30): Rendered within circle: due (9 text boxes)
+DEBUG (23:30): Rendered within circle: radio (8 text boxes)
+DEBUG (23:30): Rendered within circle: advance (4 text boxes)
+DEBUG (23:30): Rendered within circle: timers (8 text boxes)
+DEBUG (23:30): Rendered within circle: recovery (7 text boxes)
+DEBUG (23:30): Rendered within circle: error (9 text boxes)
+DEBUG (23:30): Rendered within circle: finish (6 text boxes)
+DEBUG (23:30): Rendered within circle: complete (9 text boxes)
+DEBUG (23:30): Rendered within circle: longLeg (9 text boxes)
+DEBUG (23:30): Rendered within circle: localFinish (6 text boxes)
+PASS
+------------------------------------------------------------------------------
+Executing test demoWarningIsConditional...
+PASS
+------------------------------------------------------------------------------
+Executing test radioConfirmationPreservesReferences...
+PASS
+------------------------------------------------------------------------------
+Executing test touchTapCannotStartOrAcknowledge...
+PASS
+------------------------------------------------------------------------------
+Executing test v2AllScreenBoundsAndProminence...
+DEBUG (23:30): V2 bounds and hierarchy verified: select
+DEBUG (23:30): V2 bounds and hierarchy verified: summary
+DEBUG (23:30): V2 bounds and hierarchy verified: start
+DEBUG (23:30): V2 bounds and hierarchy verified: ground
+DEBUG (23:30): V2 bounds and hierarchy verified: airborne
+DEBUG (23:30): V2 bounds and hierarchy verified: running
+DEBUG (23:30): V2 bounds and hierarchy verified: early
+DEBUG (23:30): V2 bounds and hierarchy verified: overdue
+DEBUG (23:30): V2 bounds and hierarchy verified: complete
+DEBUG (23:30): V2 bounds and hierarchy verified: radio
+DEBUG (23:30): V2 bounds and hierarchy verified: timers
+DEBUG (23:30): V2 bounds and hierarchy verified: first
+DEBUG (23:30): V2 bounds and hierarchy verified: last
+DEBUG (23:30): V2 bounds and hierarchy verified: alerts
+DEBUG (23:30): V2 bounds and hierarchy verified: landing
+DEBUG (23:30): V2 bounds and hierarchy verified: finish
+DEBUG (23:30): V2 bounds and hierarchy verified: discard
+DEBUG (23:30): V2 bounds and hierarchy verified: saved
+DEBUG (23:30): V2 bounds and hierarchy verified: recovery
+DEBUG (23:30): V2 bounds and hierarchy verified: review
+DEBUG (23:30): V2 bounds and hierarchy verified: pending
+DEBUG (23:30): V2 bounds and hierarchy verified: long
+PASS
+------------------------------------------------------------------------------
+Executing test v2LongPlanNameActuallyTruncates...
+PASS
+------------------------------------------------------------------------------
+Executing test v2NoFlightSelection...
+PASS
+------------------------------------------------------------------------------
+Executing test v2StartConfirmationExactlyOnce...
+PASS
+------------------------------------------------------------------------------
+Executing test v2ContextStartFlight...
+PASS
+------------------------------------------------------------------------------
+Executing test v2EarlyAndLateFixedSegments...
+PASS
+------------------------------------------------------------------------------
+Executing test v2AntiDoubleCheck...
+PASS
+------------------------------------------------------------------------------
+Executing test v2StartOverdueAndComplete...
+PASS
+------------------------------------------------------------------------------
+Executing test v2LandingSecondTakeoff...
+PASS
+------------------------------------------------------------------------------
+Executing test v2UndoAllCheckStates...
+PASS
+------------------------------------------------------------------------------
+Executing test v2GpsCannotChangeSegments...
+PASS
+------------------------------------------------------------------------------
+Executing test v2MenuRingAndBack...
+PASS
+------------------------------------------------------------------------------
+Executing test v2ContextMenusAndConfirmations...
+PASS
+------------------------------------------------------------------------------
+Executing test v2RadioOnlyOnChanges...
+PASS
+------------------------------------------------------------------------------
+Executing test v2AlertListCancelAndSave...
+PASS
+------------------------------------------------------------------------------
+Executing test v2FinishVerifiedAndNoFabrication...
+PASS
+------------------------------------------------------------------------------
+Executing test v2FailedSaveStaysPending...
+PASS
+------------------------------------------------------------------------------
+Executing test v2LocalSaveFailureDoesNotExit...
+PASS
+------------------------------------------------------------------------------
+Executing test v2DiscardFailureRetainsNative...
+PASS
+------------------------------------------------------------------------------
+Executing test v2DiscardUnknownNativeIsBlocked...
+PASS
+------------------------------------------------------------------------------
+Executing test v2RestartDoesNotCreateDuplicate...
+PASS
+------------------------------------------------------------------------------
+Executing test v2PendingCannotSelectOrDiscard...
+PASS
+------------------------------------------------------------------------------
+Executing test v2PlanIdentityAndLegacyRecovery...
+PASS
+------------------------------------------------------------------------------
+Executing test v2DiscardTombstoneRoundTrip...
+PASS
+------------------------------------------------------------------------------
+Executing test v2NativeDiscardSmoke...
+PASS
+------------------------------------------------------------------------------
+Executing test v2PendingRadioSurvivesUnchangedLeg...
+PASS
+------------------------------------------------------------------------------
+Executing test v2FailedFinishFreezesLocalEnd...
+PASS
+------------------------------------------------------------------------------
+Executing test v2NoNewFlightOverUnrecordedActiveSession...
+PASS
+------------------------------------------------------------------------------
+Executing test v3NavigationHasOnlyRequiredContent...
+PASS
+------------------------------------------------------------------------------
+Executing test v3ContextActionMatchesActualStart...
+PASS
+------------------------------------------------------------------------------
+Executing test v3OverdueIsAmberAndStillAcknowledges...
+PASS
+------------------------------------------------------------------------------
+Executing test v3GroundAndPendingActionsOverrideOldCountdown...
+PASS
+------------------------------------------------------------------------------
+Executing test v3LongestDigitsAndRadioAlignment...
+PASS
+------------------------------------------------------------------------------
+Executing test v3ResponsiveCircularRegions...
+PASS
+------------------------------------------------------------------------------
+Executing test v3LargeMenusPreserveRingAndConfirmations...
+PASS
+------------------------------------------------------------------------------
+Executing test v3TimerAndAlertProminence...
+PASS
+------------------------------------------------------------------------------
+Executing test v3UndoMenuLabelsTheRestoredLeg...
+PASS
+------------------------------------------------------------------------------
+Executing test v3TimersRetainAccurateRecordingAndFixStatus...
+PASS
+
+==============================================================================
+RESULTS
+Test:                                         Status:
+clearoffInterval                              PASS
+acknowledgementAnchor                         PASS
+shortenedFinal                                PASS
+manualWaypoints                               PASS
+independentAirborne                           PASS
+hourBoundary                                  PASS
+accidentalInputs                              PASS
+unacknowledgedHistory                         PASS
+restartRecovery                               PASS
+finalLegUndo                                  PASS
+radioAndConfirmation                          PASS
+monotonicRollover                             PASS
+repeatedButtonIgnored                         PASS
+persistentRoundTrip                           PASS
+finishingMustNotInventLanding                 PASS
+recoveryMustRetainDueEvent                    PASS
+finishEarlyHistory                            PASS
+finishAirborneIncomplete                      PASS
+normalLandingThenFinish                       PASS
+actualWaypointSeparate                        PASS
+recoveryDueExactlyOnce                        PASS
+undoArrivalRetainsEvent                       PASS
+centralDeliveryDrainsOnce                     PASS
+saveCleanupCannotUndoSuccess                  PASS
+failedSaveResumesFit                          PASS
+failedSaveAndRestartIsExplicit                PASS
+stopFailureDoesNotSave                        PASS
+gpsFailureDoesNotBlockFit                     PASS
+fitCreationCleansGps                          PASS
+fitStartFailureRetry                          PASS
+manualNavigationWhenFitUnavailable            PASS
+recoveredNavigationWhenFitUnavailable         PASS
+corruptionBoundaries                          PASS
+independentUnreadableCheckpoint               PASS
+progressMatchesAcknowledgements               PASS
+fitAirborneLapBoundaries                      PASS
+lapFailureDoesNotInventFlightEvents           PASS
+nativeFlyingFitLapSmoke                       PASS
+alertModeStorageRoundTrip                     PASS
+supportedAttentionModes                       PASS
+corruptUndoAndStickyErrors                    PASS
+ambiguousStopFailureResumes                   PASS
+cleanupRetryAfterFinished                     PASS
+recoveryBackShowsManualRecordingWarning       PASS
+localFinishRetainsUnsavedFit                  PASS
+lateSavePreservesLocalEndAndIncompletePhase   PASS
+pendingFitPreventsSilentNewFlightAfterRestart PASS
+legacyCheckpointMigrationIsConservative       PASS
+pendingFitBlocksExplicitExit                  PASS
+clockDisplayBoundaries                        PASS
+rendererCircularBounds                        PASS
+demoWarningIsConditional                      PASS
+radioConfirmationPreservesReferences          PASS
+touchTapCannotStartOrAcknowledge              PASS
+v2AllScreenBoundsAndProminence                PASS
+v2LongPlanNameActuallyTruncates               PASS
+v2NoFlightSelection                           PASS
+v2StartConfirmationExactlyOnce                PASS
+v2ContextStartFlight                          PASS
+v2EarlyAndLateFixedSegments                   PASS
+v2AntiDoubleCheck                             PASS
+v2StartOverdueAndComplete                     PASS
+v2LandingSecondTakeoff                        PASS
+v2UndoAllCheckStates                          PASS
+v2GpsCannotChangeSegments                     PASS
+v2MenuRingAndBack                             PASS
+v2ContextMenusAndConfirmations                PASS
+v2RadioOnlyOnChanges                          PASS
+v2AlertListCancelAndSave                      PASS
+v2FinishVerifiedAndNoFabrication              PASS
+v2FailedSaveStaysPending                      PASS
+v2LocalSaveFailureDoesNotExit                 PASS
+v2DiscardFailureRetainsNative                 PASS
+v2DiscardUnknownNativeIsBlocked               PASS
+v2RestartDoesNotCreateDuplicate               PASS
+v2PendingCannotSelectOrDiscard                PASS
+v2PlanIdentityAndLegacyRecovery               PASS
+v2DiscardTombstoneRoundTrip                   PASS
+v2NativeDiscardSmoke                          PASS
+v2PendingRadioSurvivesUnchangedLeg            PASS
+v2FailedFinishFreezesLocalEnd                 PASS
+v2NoNewFlightOverUnrecordedActiveSession      PASS
+v3NavigationHasOnlyRequiredContent            PASS
+v3ContextActionMatchesActualStart             PASS
+v3OverdueIsAmberAndStillAcknowledges          PASS
+v3GroundAndPendingActionsOverrideOldCountdown PASS
+v3LongestDigitsAndRadioAlignment              PASS
+v3ResponsiveCircularRegions                   PASS
+v3LargeMenusPreserveRingAndConfirmations      PASS
+v3TimerAndAlertProminence                     PASS
+v3UndoMenuLabelsTheRestoredLeg                PASS
+v3TimersRetainAccurateRecordingAndFixStatus   PASS
+Ran 92 tests
+
+PASSED (passed=92, failed=0, errors=0)

@@ -6,47 +6,72 @@ function durationText(seconds) { seconds=seconds.toNumber(); return (seconds/60)
 function clockText(hour,minute,second) { return hour.format("%02d")+":"+minute.format("%02d")+":"+second.format("%02d"); }
 class NavView extends WatchUi.View {
     var app; var fonts={}; var bounds=[]; var layoutError=false;
-    const MUTED=0xAAAAAA;
+    const MUTED=0xCCCCCC;
     const GREEN=0x66EE88;
     const AMBER=0xFFCC44;
     function initialize(owner) { View.initialize(); app=owner; }
     function fontFor(size) {
-        if(!fonts.hasKey(size)) {
-            var font=null;
-            if(Graphics has :getVectorFont) { font=Graphics.getVectorFont({:face=>"RobotoCondensedRegular",:size=>size}); }
-            fonts[size]=font;
-        }
+        if(!fonts.hasKey(size)) { fonts[size]=Graphics.getVectorFont({:face=>"RobotoCondensedRegular",:size=>size}); }
         return fonts[size];
     }
-    // Rectangles are fitted against both the requested box and the circle's inset chord.
-    function text(dc,x,y,w,h,value,maxSize,color) {
-        var cx=x+w/2.0; var radius=dc.getWidth()/2.0-10;
-        var top=y-dc.getHeight()/2.0; if(top<0) { top=-top; }
-        var bottom=y+h-dc.getHeight()/2.0; if(bottom<0) { bottom=-bottom; }
-        var distance=top>bottom ? top : bottom;
-        var half=distance<radius ? Math.sqrt(radius*radius-distance*distance) : 0;
-        var left=dc.getWidth()/2.0-half; var right=dc.getWidth()/2.0+half;
-        var safe=cx-left<right-cx ? 2*(cx-left) : 2*(right-cx);
-        var available=w<safe ? w : safe;
-        var font=Graphics.FONT_XTINY; var found=false;
-        for(var size=maxSize;size>=12;size-=2) {
-            var candidate=fontFor(size);
-            if(candidate!=null && dc.getFontHeight(candidate)<=h && dc.getTextWidthInPixels(value,candidate)<=available) { font=candidate; found=true; break; }
-        }
-        if(!found) {
-            var choices=[Graphics.FONT_NUMBER_MILD,Graphics.FONT_MEDIUM,Graphics.FONT_SMALL,Graphics.FONT_XTINY];
-            for(var i=0;i<choices.size();i+=1) {
-                if(dc.getFontHeight(choices[i])<=h && dc.getTextWidthInPixels(value,choices[i])<=available) { font=choices[i]; found=true; break; }
-            }
-        }
-        var tw=dc.getTextWidthInPixels(value,font); var th=dc.getFontHeight(font);
-        if(!found) { layoutError=true; }
-        var tx=cx-tw/2.0; var ty=y+(h-th)/2.0;
-        bounds.add({"text"=>value,"x"=>tx,"y"=>ty,"w"=>tw,"h"=>th,"color"=>color});
-        dc.setColor(color,Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx,ty,font,value,Graphics.TEXT_JUSTIFY_CENTER);
+    function localClock() { var clock=System.getClockTime(); return clockText(clock.hour,clock.min,clock.sec); }
+    function inside(dc,x,y,w,h) {
+        var radius=(dc.getWidth()<dc.getHeight() ? dc.getWidth() : dc.getHeight())/2.0;
+        radius-=10.0*radius/227.0;
+        var dx=x-dc.getWidth()/2.0; var dy=y-dc.getHeight()/2.0;
+        var xs=[dx,dx+w]; var ys=[dy,dy+h];
+        for(var i=0;i<2;i+=1) { for(var j=0;j<2;j+=1) { if(xs[i]*xs[i]+ys[j]*ys[j]>radius*radius+1) { return false; } } }
+        return true;
     }
+    // Each role has its own allocated region and readable font floor. No shared minimum-size layout.
+    // Reference strings reserve the widest supported digits, preventing countdown/clock size changes.
+    function region(dc,x,y,w,h,value,maxSize,minSize,color,align,reference) {
+        var scale=(dc.getWidth()<dc.getHeight() ? dc.getWidth() : dc.getHeight())/454.0;
+        var left=(dc.getWidth()-454*scale)/2.0+x*scale; var top=(dc.getHeight()-454*scale)/2.0+y*scale;
+        w*=scale; h*=scale; var font=null; var chosen=(minSize*scale).toNumber(); var tx=left; var ty=top; var tw=0; var th=0; var found=false;
+        for(var size=(maxSize*scale).toNumber();size>=(minSize*scale).toNumber();size-=2) {
+            var candidate=fontFor(size); if(candidate==null) { continue; }
+            th=dc.getFontHeight(candidate); tw=dc.getTextWidthInPixels(value,candidate);
+            var rw=reference==null ? tw : dc.getTextWidthInPixels(reference,candidate); if(tw>rw) { rw=tw; }
+            var rx=align<0 ? left : (align>0 ? left+w-rw : left+(w-rw)/2.0);
+            ty=top+(h-th)/2.0;
+            if(rw<=w && th<=h && inside(dc,rx,ty,rw,th)) { font=candidate; chosen=size; found=true; break; }
+        }
+        if(!found) { layoutError=true; font=fontFor(chosen); }
+        tw=dc.getTextWidthInPixels(value,font); th=dc.getFontHeight(font); ty=top+(h-th)/2.0;
+        tx=align<0 ? left : (align>0 ? left+w-tw : left+(w-tw)/2.0);
+        bounds.add({"text"=>value,"x"=>tx,"y"=>ty,"w"=>tw,"h"=>th,"color"=>color,"font"=>chosen});
+        dc.setColor(color,Graphics.COLOR_TRANSPARENT); dc.drawText(tx,ty,font,value,Graphics.TEXT_JUSTIFY_LEFT);
+    }
+    // Compatibility helpers for existing isolated acceptance views; production roles use explicit floors.
+    function text(dc,x,y,w,h,value,maxSize,color) { region(dc,x,y,w,h,value,maxSize,12,color,0,null); }
     function row(dc,y,h,value,size,color) { text(dc,32,y,390,h,value,size,color); }
+    function centre(dc,y,h,value,maxSize,minSize,color) { region(dc,32,y,390,h,value,maxSize,minSize,color,0,null); }
+    function shortLabel(value,limit) { return value.length()>limit ? value.substring(0,limit-3)+"..." : value; }
+    function stateText() {
+        var n=app.nav;
+        if(n.s["discarded"]) { return "FLIGHT DISCARDED"; }
+        if(app.persistence.error) { return "STORAGE WARNING"; }
+        var state=app.flightState();
+        if(state.equals("FINISH_PENDING")) { return "SAVE PENDING"; }
+        if(state.equals("FINISHED")) { return "FLIGHT FINISHED"; }
+        if(state.equals("RECOVERY_REQUIRED")) { return "RECOVERY REQUIRED"; }
+        if(state.equals("RECORDING_ERROR")) { return "RECORDING WARNING"; }
+        if(!n.s["started"]) { return "FLIGHT NOT STARTED"; }
+        if(n.s["radioPending"]) { return "RADIO PENDING"; }
+        return n.timers.s["airStart"]==null ? (n.timers.s["periods"].size()>0 ? "LANDED" : "ON GROUND") : "AIRBORNE";
+    }
+    // Display semantics come from exactly the same primary action used by the controller.
+    function clearoffLines() {
+        var action=app.primaryAction();
+        if(action.equals("TAKEOFF")) { return ["TAKEOFF"]; }
+        if(action.equals("START CHECKS")) { return ["START","CLEAROFF"]; }
+        if(action.equals("REVIEW SAVE")) { return ["REVIEW","SAVE"]; }
+        if(action.equals("EXIT")) { return ["EXIT"]; }
+        if(action.equals("SELECT FLIGHT")) { return ["SELECT","FLIGHT"]; }
+        if(action.equals("CHECKS COMPLETE")) { return ["COMPLETE"]; }
+        return [app.nav.check.s["state"].equals("due") ? "DUE" : durationText(app.nav.check.countdown(app.nav.timers.s["elapsed"]))];
+    }
     function onUpdate(dc) {
         bounds=[]; layoutError=false; dc.setColor(Graphics.COLOR_WHITE,Graphics.COLOR_BLACK); dc.clear();
         if(app.screen.equals("select")) { plans(dc); }
@@ -60,153 +85,134 @@ class NavView extends WatchUi.View {
         else if(app.screen.equals("radio")) { radio(dc); }
         else { navigation(dc); }
     }
-    function shortLabel(value,limit) { return value.length()>limit ? value.substring(0,limit-3)+"..." : value; }
-    function stateText() {
-        var n=app.nav;
-        if(n.s["discarded"]) { return "FLIGHT DISCARDED"; }
-        if(app.persistence.error) { return "STORAGE WARNING"; }
-        var state=app.flightState();
-        if(state.equals("FINISH_PENDING")) { return "SAVE PENDING"; }
-        if(state.equals("FINISHED")) { return "FLIGHT FINISHED"; }
-        if(state.equals("RECOVERY_REQUIRED")) { return "RECOVERY REQUIRED"; }
-        if(state.equals("RECORDING_ERROR")) { return "RECORDING WARNING"; }
-        if(!n.s["started"]) { return "FLIGHT NOT STARTED"; }
-        if(n.s["radioPending"]) { return n.timers.s["airStart"]==null ? "ON GROUND / RADIO!" : "AIRBORNE / RADIO!"; }
-        if(n.timers.s["airStart"]==null) { return n.timers.s["periods"].size()>0 ? "LANDED" : "ON GROUND"; }
-        var p=n.progress(); return "AIRBORNE / CHECK "+p["current"]+"/"+p["total"];
-    }
     function navigation(dc) {
-        var n=app.nav; var leg=n.leg(); var check=n.check.s["state"];
-        if(n.s["demo"]) { row(dc,18,23,"DEMO",18,AMBER); }
-        row(dc,43,29,shortLabel(leg["from"]+" > "+leg["to"],23)+"  "+(n.s["index"]+1)+"/"+n.plan.size(),26,Graphics.COLOR_WHITE);
-        var clock=System.getClockTime(); row(dc,73,86,clockText(clock.hour,clock.min,clock.sec),84,Graphics.COLOR_WHITE);
-        text(dc,40,163,180,27,"HEADING",22,MUTED); text(dc,234,163,180,27,"CLEAROFF",22,MUTED);
-        text(dc,40,191,180,67,leg["heading"].format("%03d")+"°",64,Graphics.COLOR_WHITE);
-        var value="IDLE"; var size=52; var color=GREEN; var detail="CHECKS IDLE";
-        if(check.equals("running")) { value=durationText(n.check.countdown(n.timers.s["elapsed"])); size=62; detail="CHECKS RUNNING"; }
-        if(check.equals("due")) { value="CHECK DUE"; size=32; color=AMBER; detail="+"+durationText(n.timers.s["elapsed"]-n.check.s["dueElapsed"]); }
-        if(check.equals("complete") || check.equals("legCompleted")) { value="COMPLETE"; size=34; detail="CHECKS COMPLETE"; }
-        if(n.s["finished"] || n.s["discarded"]) { value="ENDED"; size=42; detail="FLIGHT FINISHED"; color=MUTED; }
-        text(dc,234,191,180,67,value,size,color);
-        text(dc,40,259,180,25,"MAGNETIC",20,MUTED); text(dc,234,259,180,25,detail,18,color);
-        text(dc,64,289,110,35,"ACTIVE",23,MUTED); text(dc,178,289,212,35,leg["active"],38,Graphics.COLOR_WHITE);
-        text(dc,64,329,110,35,"STBY",23,MUTED); text(dc,178,329,212,35,leg["standby"],38,Graphics.COLOR_WHITE);
-        var attention=app.persistence.error || app.recording.warning || n.s["radioPending"] || app.storageBlocked || n.s["finishRequested"];
-        row(dc,369,28,stateText(),24,attention ? AMBER : Graphics.COLOR_WHITE);
-        var action=app.primaryAction();
-        if(action.equals("COMPLETE CHECK")) { action="COMPLETE"; }
-        if(action.equals("CHECKS COMPLETE")) { action="CHECKS COMPLETE"; }
-        else if(!action.equals("START CHECKS")) { action="START "+action; }
-        row(dc,400,28,action,22,check.equals("due") ? AMBER : GREEN);
+        var white=Graphics.COLOR_WHITE; var n=app.nav;
+        region(dc,32,76,390,104,localClock(),104,100,white,0,"23:59:59");
+        region(dc,31,181,190,30,"HEADING",28,28,white,0,null);
+        region(dc,233,181,190,30,"CLEAROFF",28,28,white,0,null);
+        region(dc,31,211,190,86,n.leg()["heading"].format("%03d")+"°",86,82,white,0,"360°");
+        var lines=clearoffLines(); var countdown=app.primaryAction().equals("COMPLETE CHECK");
+        var color=countdown ? (n.check.s["state"].equals("due") ? AMBER : white) : GREEN;
+        if(lines.size()==2) {
+            region(dc,233,211,190,42,lines[0],42,38,color,0,null);
+            region(dc,233,255,190,42,lines[1],42,38,color,0,null);
+        } else {
+            var size=countdown ? 86 : 80;
+            region(dc,233,211,190,86,lines[0],size,countdown ? 82 : 40,color,0,countdown && !lines[0].equals("DUE") ? "59:59" : null);
+        }
+        radioRows(dc,298,352,54);
+    }
+    function radioRows(dc,first,second,size) {
+        var white=Graphics.COLOR_WHITE;
+        region(dc,100,first,100,54,"ACTIVE",32,32,white,-1,null);
+        region(dc,194,first,154,54,app.nav.leg()["active"],size,size,white,1,"199.999");
+        region(dc,100,second,100,54,"STBY",32,32,white,-1,null);
+        region(dc,194,second,154,54,app.nav.leg()["standby"],size,size,white,1,"199.999");
+    }
+    function menuLabel(id) {
+        if(id==3) { return app.nav.timers.s["airStart"]==null ? "TAKEOFF" : "LAND"; }
+        if(id==4) { return app.nav.s["finishRequested"] || app.nav.s["finished"] ? "RETRY SAVE" : "FINISH"; }
+        var labels=["RADIO","ADVANCE","UNDO","LAND","FINISH","ALERTS","SELECT","EXIT","RETRY FIT","RETRY LOG","LOCAL LOG","DISCARD","START FLIGHT","RADIO","RETURN","REVIEW"];
+        return labels[id];
     }
     function plans(dc) {
-        var choices=FlightPlan.catalogue(); var plan=choices[app.planChoice]; var count=FlightPlan.legsFor(plan["id"]).size();
-        row(dc,42,36,"SELECT FLIGHT",32,Graphics.COLOR_WHITE);
-        row(dc,88,28,"DEMO PLANS",22,AMBER);
-        row(dc,137,27,(app.planChoice+1)+" / "+choices.size(),22,MUTED);
-        row(dc,180,48,shortLabel(plan["name"],24),36,Graphics.COLOR_WHITE);
-        row(dc,244,32,plan["departure"]+" > "+plan["destination"],26,MUTED);
-        row(dc,284,30,count+" legs / Rev "+plan["revision"],24,MUTED);
-        row(dc,328,27,"UP / DOWN choose",22,MUTED);
-        row(dc,369,32,"START SELECT",26,GREEN);
-        if(app.notice!=null) { row(dc,407,24,shortLabel(app.notice,24),18,AMBER); }
+        var plan=FlightPlan.catalogue()[app.planChoice];
+        centre(dc,52,52,"SELECT FLIGHT",42,38,Graphics.COLOR_WHITE);
+        centre(dc,119,36,"DEMO",30,30,AMBER);
+        centre(dc,183,70,shortLabel(plan["name"],24),50,32,Graphics.COLOR_WHITE);
+        centre(dc,283,38,FlightPlan.legsFor(plan["id"]).size()+" LEGS / REV "+plan["revision"],30,28,MUTED);
+        centre(dc,346,42,"START SELECT",36,34,GREEN);
+        if(app.notice!=null) { centre(dc,397,30,shortLabel(app.notice,24),26,24,AMBER); }
     }
     function summary(dc) {
         var plan=FlightPlan.find(app.nav.s["planId"]);
-        row(dc,46,34,"FLIGHT SUMMARY",30,Graphics.COLOR_WHITE);
-        row(dc,102,30,"DEMO / NOT VALIDATED",23,AMBER);
-        row(dc,157,45,shortLabel(app.nav.s["flight"],24),34,Graphics.COLOR_WHITE);
-        row(dc,220,32,plan["departure"]+" > "+plan["destination"],28,Graphics.COLOR_WHITE);
-        row(dc,267,30,app.nav.plan.size()+" legs / Rev "+plan["revision"],24,MUTED);
-        row(dc,305,27,plan["date"],22,MUTED);
-        row(dc,354,33,"START FLIGHT >",28,GREEN);
-        row(dc,400,26,"BACK: flight selection",20,MUTED);
+        centre(dc,52,50,"FLIGHT",44,42,Graphics.COLOR_WHITE);
+        centre(dc,121,36,"DEMO / NOT VALIDATED",28,26,AMBER);
+        centre(dc,181,68,shortLabel(app.nav.s["flight"],24),50,32,Graphics.COLOR_WHITE);
+        centre(dc,277,36,app.nav.plan.size()+" LEGS / REV "+plan["revision"],32,30,MUTED);
+        centre(dc,336,44,"START FLIGHT",38,36,GREEN);
+        centre(dc,390,34,"BACK SELECT",30,28,MUTED);
+    }
+    function recordingText() {
+        if(app.recording.state.equals("saved")) { return "FIT SAVED"; }
+        if(app.recording.state.equals("recording")) {
+            if(app.recording.gps.fault || !app.recording.gps.enabled) { return "FIT ON / GPS ERROR"; }
+            return app.recording.gps.quality.equals("GPS fix / recording") ? "FIT ON / GPS FIX" : "FIT ON / GPS WAIT";
+        }
+        if(app.nativeUnresolved()) { return "FIT NEEDS REVIEW"; }
+        return app.nav.s["started"] ? "FIT NOT ON" : "FIT NOT STARTED";
     }
     function timers(dc) {
-        var n=app.nav; var leg=n.leg(); row(dc,40,38,"FLIGHT TIMERS",32,Graphics.COLOR_WHITE);
-        row(dc,98,42,"SESSION  "+durationText(n.timers.s["elapsed"]),34,Graphics.COLOR_WHITE);
-        row(dc,148,42,"AIRBORNE  "+durationText(n.timers.airborne()),34,Graphics.COLOR_WHITE);
-        row(dc,198,42,"LEG  "+durationText(n.legSeconds()),34,Graphics.COLOR_WHITE);
-        row(dc,252,30,stateText(),24,Graphics.COLOR_WHITE);
-        row(dc,291,27,"GS "+leg["gs"].format("%.0f")+" kt / ALT "+leg["altitude"]+" ft",22,MUTED);
-        row(dc,326,27,app.recording.gps.quality,22,MUTED);
-        row(dc,360,29,shortLabel(app.recording.status,30),22,app.recording.warning ? AMBER : MUTED);
-        row(dc,401,26,"UP / DOWN actions",20,GREEN);
+        var white=Graphics.COLOR_WHITE;
+        centre(dc,44,32,"SESSION",28,28,white); centre(dc,78,64,durationText(app.nav.timers.s["elapsed"]),64,56,white);
+        centre(dc,151,32,"AIRBORNE",28,28,white); centre(dc,185,64,durationText(app.nav.timers.airborne()),64,56,white);
+        centre(dc,257,32,"LEG",28,28,white); centre(dc,291,64,durationText(app.nav.legSeconds()),64,56,white);
+        centre(dc,365,30,stateText(),28,24,app.recording.warning || app.nav.s["radioPending"] || app.storageBlocked ? AMBER : white);
+        centre(dc,400,28,recordingText(),24,22,app.recording.warning || app.recording.gps.fault ? AMBER : MUTED);
     }
     function menu(dc) {
-        var ids=app.menuIds(); var selected=app.selected<ids.size() ? app.selected : ids.size()-1;
-        row(dc,49,38,"FLIGHT ACTIONS",32,Graphics.COLOR_WHITE);
-        row(dc,108,28,(selected+1)+" / "+ids.size(),24,MUTED);
-        if(selected>0) { row(dc,156,30,app.actionLabel(ids[selected-1]),24,MUTED); }
-        row(dc,209,50,app.actionLabel(ids[selected]),36,ids[selected]==11 ? 0xFF6666 : GREEN);
-        if(selected+1<ids.size()) { row(dc,285,30,app.actionLabel(ids[selected+1]),24,MUTED); }
-        row(dc,347,29,"START SELECT",24,Graphics.COLOR_WHITE);
-        row(dc,397,26,"BACK: timers",22,MUTED);
+        var ids=app.menuIds(); var index=app.selected<ids.size() ? app.selected : ids.size()-1; var id=ids[index];
+        centre(dc,58,50,"ACTIONS",42,40,Graphics.COLOR_WHITE);
+        centre(dc,177,108,menuLabel(id),84,54,id==11 ? 0xFF6666 : Graphics.COLOR_WHITE);
+        if(id==1 || id==2 || id==13) {
+            var leg=app.nav.leg(); var legNumber=app.nav.s["index"]+1; if(id==2 && app.nav.undoState!=null) { leg=app.nav.plan[app.nav.undoState["index"]]; legNumber=app.nav.undoState["index"]+1; }
+            centre(dc,308,42,shortLabel(leg["from"]+" > "+leg["to"],25),34,28,MUTED);
+            centre(dc,365,30,"LEG "+legNumber+"/"+app.nav.plan.size(),28,26,MUTED);
+        }
     }
     function alertSettings(dc) {
-        var order=[2,0,1,3]; var labels=["Vibration + sound","Vibration only","Sound only","Off"];
-        row(dc,42,37,"ALERT SETTINGS",30,Graphics.COLOR_WHITE);
-        for(var i=0;i<4;i+=1) { row(dc,119+i*51,39,(app.alertChoice==order[i] ? "> " : "")+labels[i],28,app.alertChoice==order[i] ? GREEN : MUTED); }
-        row(dc,341,29,"START SAVE",24,GREEN); row(dc,394,27,"BACK CANCEL",22,MUTED);
+        var names=["VIBRATE","SOUND","BOTH","OFF"]; var details=["Vibration only","Sound only","Vibration + sound","Alerts disabled"];
+        centre(dc,58,52,"ALERTS",44,42,Graphics.COLOR_WHITE);
+        centre(dc,171,98,names[app.alertChoice],80,64,Graphics.COLOR_WHITE);
+        centre(dc,278,40,details[app.alertChoice],34,30,MUTED);
+        centre(dc,339,42,"START SAVE",36,34,GREEN); centre(dc,391,34,"BACK CANCEL",30,28,MUTED);
     }
     function radio(dc) {
-        row(dc,46,40,"RADIO CHANGE",34,AMBER);
-        var clock=System.getClockTime(); row(dc,100,70,clockText(clock.hour,clock.min,clock.sec),64,Graphics.COLOR_WHITE);
-        row(dc,188,30,"REFERENCE ONLY",24,MUTED);
-        row(dc,235,41,"ACTIVE  "+app.nav.leg()["active"],36,Graphics.COLOR_WHITE);
-        row(dc,287,41,"STBY  "+app.nav.leg()["standby"],36,Graphics.COLOR_WHITE);
-        row(dc,350,32,"START ACKNOWLEDGE",26,GREEN);
-        row(dc,397,25,"BACK: remind later",20,MUTED);
+        centre(dc,62,64,"RADIO",56,54,AMBER);
+        centre(dc,139,35,"REFERENCE ONLY",28,28,MUTED);
+        radioRows(dc,200,270,52);
+        centre(dc,343,42,"START ACK",36,34,GREEN); centre(dc,395,32,"BACK LATER",28,26,MUTED);
     }
     function confirm(dc) {
-        var id=app.pending; var destructive=id==11;
-        row(dc,48,40,id==12 ? "START FLIGHT" : "CONFIRM",32,destructive ? 0xFF6666 : Graphics.COLOR_WHITE);
-        row(dc,127,53,app.actionLabel(id),36,destructive ? 0xFF6666 : Graphics.COLOR_WHITE);
-        if(id==12) {
-            row(dc,211,32,shortLabel(app.nav.s["flight"],24),28,Graphics.COLOR_WHITE);
-            row(dc,257,30,"Starts session and recording",24,MUTED);
-            row(dc,294,28,"Takeoff remains manual",22,AMBER);
-        } else if(id==4 || id==10) {
-            row(dc,210,31,app.nav.timers.s["airStart"]!=null ? "Landing NOT confirmed" : "Close flight session",24,AMBER);
-            row(dc,252,30,"No invented waypoint arrival",22,MUTED);
-            if(id==10) { row(dc,292,28,"FIT may remain unresolved",22,AMBER); }
-        } else if(id==11) {
-            row(dc,212,32,"Flight will NOT be saved",26,0xFF6666);
-            row(dc,262,29,"Discards log and native FIT",22,MUTED);
-        } else if(id==3) { row(dc,220,35,"Pilot-confirmed event",26,AMBER); }
-        row(dc,346,32,"START CONFIRM",26,destructive ? 0xFF6666 : GREEN); row(dc,395,28,"BACK CANCEL",22,MUTED);
+        var id=app.pending; var red=id==11 ? 0xFF6666 : Graphics.COLOR_WHITE;
+        var title=id==12 ? "START" : (id==11 ? "DISCARD" : (id==4 ? "FINISH" : menuLabel(id)));
+        centre(dc,69,72,title,64,48,red); centre(dc,145,68,id==12 || id==11 || id==4 ? "FLIGHT?" : "CONFIRM?",60,48,red);
+        if(id==4) { centre(dc,227,34,app.nav.timers.s["airStart"]!=null ? "Landing unconfirmed" : "Save flight and FIT",30,28,AMBER); centre(dc,270,32,"No invented arrival",28,26,MUTED); }
+        if(id==11) { centre(dc,232,40,"WILL NOT BE SAVED",34,30,0xFF6666); }
+        if(id==12) { centre(dc,227,34,"Starts recording",32,30,MUTED); centre(dc,270,32,"Takeoff is manual",28,28,AMBER); }
+        if(id==10) { centre(dc,229,36,"FIT may stay pending",32,28,AMBER); centre(dc,272,32,"Only saves local log",28,26,MUTED); }
+        if(id==3) { centre(dc,236,40,"Pilot-confirmed event",30,28,AMBER); }
+        centre(dc,332,44,id==4 ? "START SAVE" : (id==11 ? "START DISCARD" : "START CONFIRM"),36,32,id==11 ? 0xFF6666 : GREEN);
+        centre(dc,387,36,"BACK CANCEL",30,28,MUTED);
     }
     function recovery(dc) {
-        var unresolved=app.nav.s["finished"] || app.nav.s["finishRequested"];
-        row(dc,42,40,unresolved ? "SAVE NEEDS REVIEW" : "RECORDING RECOVERY",28,AMBER);
+        var white=Graphics.COLOR_WHITE;
         if(app.screen.equals("review")) {
-            row(dc,113,32,"Local log is retained",26,Graphics.COLOR_WHITE);
-            row(dc,170,30,"Original FIT not identified",24,AMBER);
-            row(dc,222,29,"No automatic replacement",23,MUTED);
-            row(dc,271,29,"Do not reset app data",23,MUTED);
-            row(dc,346,30,"BACK: safe options",24,GREEN); return;
+            centre(dc,55,60,"FIT REVIEW",48,44,AMBER);
+            centre(dc,139,40,"Local log retained",34,32,white);
+            centre(dc,193,40,"Original FIT unknown",32,30,AMBER);
+            centre(dc,247,40,"No new recording",32,30,white);
+            centre(dc,301,40,"Do not reset data",32,30,white);
+            centre(dc,370,40,"BACK OPTIONS",32,30,GREEN); return;
         }
-        row(dc,105,32,app.storageBlocked ? "Local data needs review" : (unresolved ? "Completion not verified" : (app.recording.state.equals("unavailable") ? "Flight log retained" : "Local timers restored")),26,Graphics.COLOR_WHITE);
-        row(dc,153,29,app.storageBlocked ? "Checkpoints are retained" : "FIT/GPS gaps may remain",23,MUTED);
-        if(app.notice!=null) { row(dc,195,30,shortLabel(app.notice,29),23,AMBER); }
+        centre(dc,55,60,app.nav.s["finishRequested"] || app.nav.s["finished"] ? "SAVE PENDING" : "RECOVERY",46,42,AMBER);
+        centre(dc,129,40,app.storageBlocked ? "Checkpoints retained" : "Local log retained",32,30,white);
+        if(app.notice!=null) { centre(dc,174,34,shortLabel(app.notice,31),28,24,AMBER); }
         var ids=app.recoveryIds(); var index=app.selected<ids.size() ? app.selected : 0; var id=ids[index];
-        row(dc,239,27,(index+1)+" / "+ids.size()+"  UP / DOWN",22,MUTED);
-        row(dc,281,42,app.actionLabel(id),30,GREEN);
-        var consequence="Keep original data for review";
-        if(id==10) { consequence="Close log; FIT may stay pending"; }
-        if(id==14) { consequence="Navigate with recording warning"; }
-        if(id==8) { consequence="Try recording once; gaps possible"; }
-        if(id==4) { consequence="Retry retained recording save"; }
-        row(dc,337,30,consequence,20,MUTED);
-        row(dc,392,28,"BACK: navigation",22,MUTED);
+        centre(dc,217,56,menuLabel(id),44,36,GREEN);
+        var first="Keep original data"; var second="Review before replacing";
+        if(id==10) { first="Close local log only"; second="FIT may stay pending"; }
+        if(id==14) { first="Manual navigation"; second="Recording warning stays"; }
+        if(id==8) { first="One recording retry"; second="FIT/GPS gaps possible"; }
+        if(id==4) { first="Retry original save"; second="Do not start a new flight"; }
+        centre(dc,281,34,first,28,26,white); centre(dc,318,34,second,28,26,white);
+        centre(dc,358,36,"START SELECT",30,28,GREEN); centre(dc,400,32,"BACK FLIGHT",28,24,MUTED);
     }
     function completed(dc) {
-        row(dc,64,43,app.nav.s["discarded"] ? "FLIGHT DISCARDED" : "FLIGHT FINISHED",32,Graphics.COLOR_WHITE);
-        row(dc,153,43,app.nav.s["fitOutcome"].equals("saved") ? "FIT + LOG SAVED" : (app.nav.s["discarded"] ? "Not saved" : "LOCAL LOG ONLY"),30,GREEN);
-        row(dc,226,35,"SESSION "+durationText(app.nav.timers.s["elapsed"]),28,Graphics.COLOR_WHITE);
-        row(dc,275,35,"AIRBORNE "+durationText(app.nav.timers.airborne()),28,Graphics.COLOR_WHITE);
-        row(dc,344,31,"Returning to Garmin",24,MUTED);
-        row(dc,393,28,"START EXIT",24,GREEN);
+        var white=Graphics.COLOR_WHITE;
+        centre(dc,76,86,app.nav.s["discarded"] ? "DISCARDED" : "FINISHED",64,54,white);
+        centre(dc,195,56,app.nav.s["fitOutcome"].equals("saved") ? "FIT + LOG SAVED" : (app.nav.s["discarded"] ? "NOT SAVED" : "LOCAL LOG ONLY"),40,36,app.nav.s["fitOutcome"].equals("saved") ? GREEN : AMBER);
+        centre(dc,296,44,"Returning to Garmin",32,28,MUTED); centre(dc,373,40,"START EXIT",36,32,GREEN);
     }
 }
 class NavDelegate extends WatchUi.BehaviorDelegate {

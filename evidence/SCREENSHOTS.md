@@ -1,3 +1,5 @@
+> Latest V3 evidence: [minimal navigation, large menus, real-button native save and exact limits](v3/REPORT.md). Earlier results remain historical evidence.
+
 > Latest V2 evidence: [actual screenshots, real button flights and decoded GPS/native FIT](v2/REPORT.md). Earlier results below are historical.
 
 # Actual simulator screenshots — 27 October 2026

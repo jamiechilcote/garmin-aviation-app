@@ -37,3 +37,11 @@ Use `v2-proof.jungle` / `bin/v2-proof.prg` for labelled frozen fixtures. START c
 The GPS driver's V2 entry starts at a selected summary: configure native FIT playback first, then press START twice for the separate confirmation. It records takeoff after two seconds, starts checks after four, lands after 24 and attempts Finish & Save after 28. It exits directly only after native state is saved; failed saves remain protected. See current V2 GPS evidence rather than assuming the previous altitude offset is fixed. Restore GPS quality afterwards.
 
 `VisualAcceptanceApp` and `PendingAcceptanceApp` are historical investigation helpers. For exact pre-V2 reproduction use commit a2c71f8 and its report. Do not interpret their old interaction fixtures as current end-to-end V2 acceptance.
+
+## V3 renderer measurements and physical-size review
+
+`v3.jungle` uses `V3MeasureApp`: isolated frozen fixtures, no native recording or storage writes. START cycles ground, airborne, running, overdue, complete, timers, actions, selection, radio, finish, discard, alerts, recovery, summary, start, saved and review. `V3MeasureView` logs each real Garmin text rectangle and selected font size once per scene. Baseline V2 was measured before editing; its old bounds did not include a selected-font field, so FontSize=0 in the baseline log means unavailable, not a zero-pixel font.
+
+`v3-button.jungle` reuses the existing button logger with a separate app ID. All input/controller/recording behaviour is production. Its recorded native flight is separate from frozen screenshot evidence.
+
+`Make-V3-Review.ps1` exports the bounds and crops/scales real captures to 454 px and 134 px previews. It checks the observed simulator capture dimensions; inspect/reconfigure the origin if the simulator skin/scale changes. The tracked HTML shows these genuine screenshots at 35.4 mm with a 50 mm print calibration line. CSS/monitor scaling is not a physical-watch test. Full results and screenshot types: `evidence/v3/REPORT.md`.

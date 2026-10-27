@@ -1,4 +1,4 @@
-# V2 user guide
+# Aviation Navlog V3 user guide
 
 ## Buttons
 
@@ -16,15 +16,15 @@
 | Recovery | Select highlighted safe option | Manual navigation with warning | Choose available option |
 | Completion | Safe exit | Safe exit | No new flight action |
 
-LIGHT retains system behaviour. Touch taps are consumed. Select has a 450 ms debounce, other navigation 180 ms; a new CLEAROFF interval additionally rejects acknowledgements for two elapsed seconds. Wait briefly if a press is ignored. The navigation footer names the current START action.
+LIGHT retains system behaviour. Touch taps are consumed. Select has a 450 ms debounce, other navigation 180 ms; a new CLEAROFF interval additionally rejects acknowledgements for two elapsed seconds. Wait briefly if a press is ignored. The CLEAROFF area names the action: TAKEOFF, START CLEAROFF, a countdown, DUE or COMPLETE. No separate action footer is shown.
 
 ## Start, fly and finish
 
 Choose a clearly labelled demo plan, review its departure/destination, leg count and revision, then confirm Start Flight. Until confirmation there is no FIT activity or running session timer. Wait for an outdoor GPS fix before testing a physical track. BACK exposes GPS/FIT status on Flight Timers.
 
-START on the ground marks takeoff. START after takeoff starts that leg's checks. START during the countdown acknowledges early; START after CHECK DUE acknowledges late. Either consumes exactly one fixed planned segment and starts the next full planned interval. Final acknowledgement shows CHECKS COMPLETE. Neither check completion nor arrival alerts advance a waypoint.
+START on the ground marks takeoff. START after takeoff starts that leg's checks. START during the countdown acknowledges early; START after DUE acknowledges late. Either consumes exactly one fixed planned segment and starts the next full planned interval. Final acknowledgement shows COMPLETE. Neither check completion nor arrival alerts advance a waypoint.
 
-Advance waypoint and Undo are confirmed actions. A changed active or standby frequency prompts; unchanged values do not. Dismissed reminders remain visible and accessible through the contextual Radio change action. Frequencies are reference information only.
+Advance waypoint and Undo are confirmed actions. A changed active or standby frequency prompts; unchanged values do not. Dismissed reminders remain pending in Flight Timers and accessible through the contextual RADIO action. Navigation intentionally has no reminder footer. Frequencies are reference information only.
 
 Land is a separate confirmed action. The session/FIT keeps running on the ground. START can open a second airborne period. Existing checks remain on the session elapsed-time basis during a ground stop; landing does not reset the planned check schedule. Starting a new leg requires starting its checks manually.
 
@@ -52,3 +52,11 @@ Do not reset app data or start another flight over an unresolved recording. Pres
 6. Verify alert selection, cancellation, persistence, DND effects and battery. Use a separate disposable run to confirm discard and return to the launcher.
 7. Verify saved-flight reopen first. Use disposable development data for interruption/reboot/failure tests. Preserve raw FIT/checkpoints and assess continuity without assuming rebinding works.
 8. Sync only a development activity to Garmin Connect; inspect sport/category, map, altitude, laps and custom fields. None of that presentation is certified by the simulator results.
+
+## V3 display and short labels
+
+The main display follows clock → HEADING/CLEAROFF → ACTIVE/STBY. State, route, check progress, demo warnings and button instructions are removed from navigation. Review recording/state on Flight Timers and contextual recovery screens; a running timer is not proof FIT/GPS recording succeeded. Route context is shown with ADVANCE/UNDO actions, where the target matters.
+
+Flight Actions now displays one large selected label: ADVANCE, UNDO, LAND/TAKEOFF, ALERTS, FINISH, DISCARD or RADIO. UP/DOWN/BACK/START behaviour is unchanged. Alert selection shows one large mode at a time. Confirmation screens spell out START SAVE or START DISCARD and BACK CANCEL, and retain important landing/arrival or unsaved-FIT consequences.
+
+Build `scripts/build.ps1 -Release`; copy only `bin/navlog-device.prg` to the watch's `GARMIN/APPS`, then disconnect safely. The existing app ID and signing key remain. Preserve pending native data before reinstalling. [V3 captures, measurement comparison and limitations](../evidence/v3/REPORT.md).

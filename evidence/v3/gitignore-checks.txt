@@ -1,0 +1,29 @@
+IGNORED bin/navlog.prg
+IGNORED bin/gen/compiler.mcgen
+IGNORED .private/developer_key.der
+IGNORED build/tmp.o
+IGNORED gen/compiler.mir
+IGNORED local.der
+IGNORED local.pem
+IGNORED local.key
+IGNORED local.keys
+IGNORED local.p12
+IGNORED local.pfx
+IGNORED .env
+IGNORED .env.local
+IGNORED activity.fit
+IGNORED activity.log
+IGNORED temporary.tmp
+IGNORED .vscode/.browse.VC.db
+IGNORED Thumbs.db
+NOT IGNORED source/Ui.mc
+NOT IGNORED tests/V3UiTests.mc
+NOT IGNORED manifest.xml
+NOT IGNORED resources/drawables/icon.svg
+NOT IGNORED README.md
+NOT IGNORED docs/USER-GUIDE.md
+NOT IGNORED acceptance/Make-V3-Review.ps1
+NOT IGNORED evidence/v3/03-running.png
+NOT IGNORED evidence/v3/text-bounds.csv
+NOT IGNORED evidence/v3/physical-size-review.html
+NOT IGNORED .env.example

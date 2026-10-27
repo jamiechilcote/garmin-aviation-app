@@ -1,6 +1,6 @@
-# Aviation Navlog V2
+# Aviation Navlog V3
 
-Native Connect IQ / Monkey C flight activity for the **Garmin Forerunner 965 (454 × 454)**. This updates the existing navigation, timing, FIT and checkpoint architecture.
+Native Connect IQ / Monkey C flight activity for the **Garmin Forerunner 965 (454 × 454)**. V3 simplifies the watch interface while preserving the V2 flight, timing, recording and checkpoint architecture.
 
 **Every bundled heading, altitude, distance, speed and frequency is invented demo data. The plans are not operationally validated.** No Google Sheets or network integration is included.
 
@@ -25,7 +25,7 @@ To reinstall on your physical FR965, preserve any unresolved recording first. US
 3. Airborne with checks idle, START means **START CHECKS**. While running or overdue, START means **COMPLETE CHECK**. Early acknowledgements are supported. Inputs within the first two elapsed seconds of a newly started interval are ignored, protecting against repeated presses.
 4. BACK opens Flight Timers. DOWN opens the first action; UP opens the last. The timers page is the wrap position between the ends of the actions list. BACK from actions returns to timers; BACK from timers returns to navigation. Navigation UP opens the last action and DOWN opens the first. LIGHT keeps normal Garmin behaviour; touch cannot trigger flight actions.
 5. Flight Actions offers applicable waypoint advancement/undo, Land or Takeoff, alert settings, Finish & Save and Discard Flight. Destructive actions stay at the end and require confirmation. Landing closes the airborne period but keeps the session recording; START can take off again.
-6. Manual waypoint advancement resets that leg's checks to idle. Changed radio references open **RADIO CHANGE**. START acknowledges; BACK dismisses while retaining the visible reminder. Identical frequencies do not prompt. The contextual Radio change action remains only while a reminder is pending. The app never changes an aircraft radio.
+6. Manual waypoint advancement resets that leg's checks to idle. Changed radio references open **RADIO CHANGE**. START acknowledges; BACK dismisses while retaining the reminder on secondary screens. Identical frequencies do not prompt. The contextual Radio change action remains only while a reminder is pending. The pending reminder is available in Flight Timers and the contextual RADIO action; navigation has no status footer. The app never changes an aircraft radio.
 7. Finish & Save closes the local flight without fabricating a landing or waypoint arrival. Only a successful native FIT save **and** local checkpoint save produce completion and automatic exit after three seconds. Failed saving freezes the local end time and keeps recovery/pending protections. Discard removes the native recording only after `Session.discard()` succeeds, then replaces the current local log with an empty tombstone and exits. Existing archived flights remain.
 
 See the [full user guide](docs/USER-GUIDE.md) for recording recovery, alert selection and physical acceptance steps.
@@ -40,12 +40,18 @@ State is derived from canonical navigation, timer, recording and recovery data. 
 
 Unknown native recording identity after restart remains a limitation. Local checkpoints restore automatically; the app does not invent native continuity or blindly create another activity. Dedicated recovery screens retain the log, explain gaps and offer only safe retry/manual/local-log/review choices. Pending native FIT blocks unsafe exit, new flight and blind discard. Resolve save failures in the same app instance where possible; preserve unresolved data for review.
 
-## Verification
+## V3 interface and verification
 
-Baseline: **54/54 tests passed before source edits**. Final: **82/82 passed, zero failures/errors**, in the actual FR965 simulator. Debug, test and signed development device builds succeeded. Existing dictionary type warnings remain.
+Navigation contains only **local clock, heading, CLEAROFF/action, ACTIVE and STBY**. The CLEAROFF field shows green TAKEOFF, two-line START CLEAROFF, the white countdown, amber DUE or green COMPLETE. There is no route/progress/state/banner/action footer. States and recording/radio warnings remain on secondary screens. Menus show one large selected command; finish/discard still require confirmation.
 
-A real button-driven flight exercised selection, confirmations, takeoff, early checks/completion, timers/actions, alerts, landing, second takeoff, waypoint/radio prompts and native save/exit. The decoded FIT contains one flying session, four phase laps and two airborne periods. A separate V2 GPS playback run recorded changing coordinates and altitude. This V2 run produced an unexplained **−19.8 m altitude offset** from the synthetic input; earlier playback showed −122 m. Altitude accuracy remains unverified.
+Measured V2 → V3 text heights: clock **84 → 104 px**, heading **64 → 86**, countdown **62 → 86**, radios **34 → 54**. Selected action text rises **36 → 84 px**. The same running scene's measured text-rectangle occupancy increases **38.49% → 51.42%** of the circle. Actual measured regions, not just requested sizes, are documented in the [V3 report](evidence/v3/REPORT.md).
 
-Real screenshots were captured and inspected. Overdue/error/review screens and compiled icon transparency are explicitly identified as fixtures. The icon's opaque SVG rectangle is removed and compiled transparency is visible on a coloured simulator background; physical launcher background behaviour is unverified. Hardware daylight readability, alerts/DND, reboot continuity, battery and Garmin Connect presentation remain to be tested.
+The unchanged baseline passed **82 tests**; final V3 passes **92/92, zero failures/errors**. All baseline test functions remain. Simulator, test and signed-device builds succeed. Real-button takeoff/check/early-ack/menu/save/exit and native FIT saving were exercised. All required screenshots were captured in the actual FR965 simulator and inspected; frozen appearance fixtures are explicitly distinguished from the live flight.
 
-[Acceptance report and screenshots](evidence/v2/REPORT.md) · [User guide](docs/USER-GUIDE.md) · [Architecture and SDK limits](docs/V2-ARCHITECTURE.md) · [Tests](docs/TESTING.md) · [Changelog](docs/V2-CHANGELOG.md)
+[Physical-size screenshot comparison](evidence/v3/physical-size-review.html) includes 35.4 mm print sizing and a calibration ruler, plus 134 px approximations. These do not verify physical-watch readability. Install the signed build and assess daylight/wrist-distance readability on the watch.
+
+The authorised `.gitignore` restoration includes private keys/credentials, generated builds and FIT recordings while keeping source, tests, documentation and intentional screenshot evidence visible. No Sheets or new navigation features were added.
+
+Unknown native FIT recovery after restart, the earlier variable simulator altitude offset, physical launcher behaviour, alerts/DND, battery and Garmin Connect acceptance remain limitations. V3 does not change their underlying implementations or claim to resolve them.
+
+[V3 report, screenshots and measured bounds](evidence/v3/REPORT.md) · [User guide and installation](docs/USER-GUIDE.md) · [Existing architecture](docs/V2-ARCHITECTURE.md) · [Tests](docs/TESTING.md)

@@ -1,0 +1,18 @@
+BUTTON select screen=summary state=PLAN_SELECTED action=SELECT FLIGHT leg=0 checks=0 periods=0 native=idle
+BUTTON select screen=confirm state=PLAN_SELECTED action=SELECT FLIGHT leg=0 checks=0 periods=0 native=idle
+BUTTON select screen=nav state=GROUND_ACTIVE action=TAKEOFF leg=0 checks=0 periods=0 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_IDLE action=START CHECKS leg=0 checks=0 periods=1 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=0 periods=1 native=recording
+BUTTON select screen=nav state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON back screen=timers state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON down screen=menu state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON back screen=menu state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON up screen=timers state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON back screen=menu state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON up screen=menu state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON select screen=confirm state=AIRBORNE_CHECKS_RUNNING action=COMPLETE CHECK leg=0 checks=1 periods=1 native=recording
+BUTTON select screen=completed state=FINISHED action=EXIT leg=0 checks=1 periods=1 native=saved
+END native=saved outcome=saved pending=false legs=[{gs=>100.000000, actualSeconds=>19, legClosedUtc=>1793102281, index=>0, waypointReachedUtc=>null, plannedArrivalUtc=>1793103161, startUtc=>1793102261, heading=>135, closure=>sessionEnded}] checks=[{dueUtc=>1793102625, corrected=>false, leg=>0, ackUtc=>1793102267}] periods=[{landingUtc=>null, takeoffUtc=>1793102263, status=>unconfirmed, closedUtc=>1793102281, seconds=>18}]

@@ -65,3 +65,13 @@
 - Final suite: 82 passed, zero failures/errors; debug/test/signed-device builds successful. Existing dictionary type warnings remain.
 - Actual button flight saved one flying FIT with two airborne periods; separate V2 GPS playback saved nine changing coordinate samples and changing altitude with unresolved -19.8 m offset (earlier -122 m).
 - Real screenshots inspected; fixtures and real button evidence distinguished. Compiled icon alpha verified; physical launcher/readability/reboot/Connect acceptance remains open. See evidence/v2/REPORT.md and docs/USER-GUIDE.md.
+
+## V3 — physical-watch UI refinement, 27 October 2026
+- Used the precise written layout because the user photograph/drawing was not available in this task context.
+- Baseline: unchanged V2 suite 82 passed. Production changes confined to source/Ui.mc; all controller/flight/GPS/recording/persistence logic retained.
+- Removed navigation route/leg/progress/state/demo/button footers. CLEAROFF field now holds TAKEOFF, two-line START CLEAROFF, countdown, amber DUE or COMPLETE, matching the contextual START action.
+- Allocated circular-safe regions and measured independently: clock 104, heading/countdown 86, radio 54 px (V2 measured 84/64/62/34). Labels left-align and frequency values right-align. Selected action uses 84 px instead of 36.
+- Reworked secondary screens to one large selected command and concise labels while retaining explicit confirmation, cancel and recovery consequences. Corrected UNDO's displayed target-leg number without changing undo logic.
+- All required real simulator captures inspected. Added cropped/downscaled genuine 35.4 mm/134 px review artifacts; no physical readability claim.
+- Real buttons exercised selection/start, takeoff/checks/early ack, menus/confirmation cancellations, native save and normal exit. Native FIT decoded; no new GPS-track accuracy claim.
+- Final 92 tests pass; debug/test/signed-device builds succeed. Restored .gitignore with authorised local edits discarded; 29 positive/negative ignore checks pass. See evidence/v3/REPORT.md.

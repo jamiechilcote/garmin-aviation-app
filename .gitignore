@@ -1,9 +1,30 @@
+# Garmin compiler output and generated recordings
 bin/
+build/
+gen/
 .private/
-*.iq
 *.prg
+*.iq
 *.debug.xml
 *.mir
 *.fit
 *.log
+
+# Local signing keys and credentials
+*.der
+*.pem
+*.key
+*.keys
+*.p12
+*.pfx
+.env
+.env.*
+!.env.example
+
+# Local editor/temporary files
+.vscode/.browse.VC.db*
+*.tmp
+*.bak
+*.swp
+Thumbs.db
 .DS_Store
